@@ -26,7 +26,6 @@ import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
 import ru.qa.junit.RepeatedIfExceptionsTest;
 
-
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
