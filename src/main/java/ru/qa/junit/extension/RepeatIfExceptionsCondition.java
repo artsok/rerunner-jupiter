@@ -1,6 +1,22 @@
+/*
+ * (C) Copyright 2017 Artem Sokovets (http://github.com/artsok/)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ru.qa.junit.extension;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -13,6 +29,7 @@ import ru.qa.junit.RepeatedIfExceptionsTest;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
@@ -23,16 +40,16 @@ import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
 
+
 /**
- * Condition for
+ * Main condition for extension point @RepeatedIfExceptions
+ * All logic in this class. See TestTemplateIterator where handler logic of repeat tests
  *
- * @author Boni Garcia (boni.gg@gmail.com)
- * @since 1.0.0
+ * @author Artem Sokovets
  */
-@Slf4j
 public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
 
-    private static boolean exceptionAppear = false;
+    private boolean exceptionAppear = false;
 
     private int totalRepeats = 0;
 
@@ -115,9 +132,12 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         }
 
         @Override
-        public TestTemplateInvocationContext next() {
-            currentIndex++;
-            return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats,  formatter);
+        public TestTemplateInvocationContext next()  {
+            if(hasNext()) {
+                currentIndex++;
+                return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats,  formatter);
+            }
+            throw new NoSuchElementException();
         }
 
         @Override

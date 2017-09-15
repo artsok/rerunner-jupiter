@@ -7,7 +7,7 @@
     <artifactId>rerunner-jupiter</artifactId>
     <version>1.0</version>
 
-    <name>Rerunner-Junit5-Jupiter</name>
+    <name>Rerunner-Jupiter</name>
     <description>
         JUnit 5 Extension point which rerun failed tests certain number of times
     </description>
@@ -32,7 +32,6 @@
         <url>https://github.com/artsok/rerunner-jupiter</url>
         <tag>develop</tag>
     </scm>
-
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/artsok/rerunner-jupiter/issues</url>
@@ -41,12 +40,14 @@
     <properties>
         <junit.jupiter.version>5.0.0</junit.jupiter.version>
         <junit.platform.version>1.0.0</junit.platform.version>
+        <lombok.version>1.16.16</lombok.version>
+        <slf4j.version>1.7.5</slf4j.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
 
     <dependencies>
         <dependency>
@@ -62,14 +63,43 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.5</version>
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>${junit.platform.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter-engine</artifactId>
+                        <version>${junit.jupiter.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 
 
     <distributionManagement>
@@ -117,5 +147,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>
