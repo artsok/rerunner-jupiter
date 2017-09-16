@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
- * Some example how we can use @RepeatedIfExceptionsTest
+ * Examples how to use @RepeatedIfExceptionsTest
  *
  * @author Artem Sokovets
  */
