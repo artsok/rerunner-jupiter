@@ -13,30 +13,27 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Artem Sokovets
  */
-@Slf4j
 class ReRunnerTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
     @RepeatedIfExceptionsTest(repeats = 3)
     void reRunTest() {
-        if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
+        if (random.nextInt() % 2 == 0) { //In different condition of ThreadLocalRandom will be threw exception
             throw new RuntimeException("Error in Test");
         }
     }
 
     @Disabled
-    @RepeatedIfExceptionsTest(repeats = 5, exceptions = IOException.class)
+    @RepeatedIfExceptionsTest(repeats = 2, exceptions = IOException.class)
     void reRunTest2() throws IOException {
-        log.debug("Запущен тестовый метод 'reRunTest2()', класса '{1}'", this.getClass());
-        throw new IOException("Проблема с записью на диск");
+        throw new IOException("Exception in I/O operation");
     }
 
     @Disabled
-    @RepeatedIfExceptionsTest(repeats = 5, exceptions = IOException.class,
-            name = "Перезапуск теста. Попытка {currentRepetition} из {totalRepetitions}")
+    @RepeatedIfExceptionsTest(repeats = 10, exceptions = IOException.class,
+            name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
     void reRunTest3() throws IOException {
-        log.debug("Запущен тестовый метод 'reRunTest2()', класса '{1}'", this.getClass());
-        throw new IOException("Проблема с записью на диск");
+        throw new IOException("Exception in I/O operation");
     }
 }
