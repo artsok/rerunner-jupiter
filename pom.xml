@@ -27,10 +27,9 @@
     </licenses>
 
     <scm>
+        <url>http://github.com/artsok/rerunner-jupiter</url>
         <connection>scm:git:git://github.com/artsok/rerunner-jupiter.git</connection>
         <developerConnection>scm:git:git@github.com:artsok/rerunner-jupiter.git</developerConnection>
-        <url>https://github.com/artsok/rerunner-jupiter</url>
-        <tag>develop</tag>
     </scm>
     <issueManagement>
         <system>GitHub Issues</system>

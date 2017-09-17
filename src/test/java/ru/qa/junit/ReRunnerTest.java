@@ -17,6 +17,7 @@ class ReRunnerTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
+    @Disabled
     @RepeatedIfExceptionsTest(repeats = 3)
     void reRunTest() {
         if (random.nextInt() % 2 == 0) { //In different condition of ThreadLocalRandom will be threw exception
