@@ -3,17 +3,14 @@ sudo: false
 dist: trusty
 
 
-
-
 addons:
-    firefox: latest
-    apt:
-        packages:
-            - google-chrome-stable
     sonarcloud:
-        organization: "bonigarcia-github"
+        organization: "artsok-github"
         token:
-            secure: "fNDlGiZsMS83K1aL/TInfwpBDrr9GL5/6XWPQ9iv8xARPIKNf+Sb5Y3Pj/UUCOGyLLtK0g5gocl9ZXVIcRi38zKfHI1lPkgaO8HW6prhLB5wjvtWqL900wRmHSm3zS45dSeshutzHB1ycohriwzfPoiPx2Iqfz7nOg290MKLTGuhR6ZSDeZUFlS0MDqNhC62Ud44xkD5BXwoiMi/X3HJCgAdjA3HqhEKy4yFFIN0KIREJeHG6x6jlSWwHPFQ35QbNdSWD1vEDTspeYOeSCdmOeJ4347dA/bs3ox3RexAIpfa8ZbU214Mlr3+pXauiyPuY0JwOVUyAB8FKEOiXn8gvhSz4GD1b+v6VHnxnLUwc1yxqU+A4ZFIxV5l76z8mk2wTSVBU/NP7LZojBCXyGJ0urCnqrMp97LzpMU0c3oYeG7NlU5bmRNcxbFIdBt4dq9wDrugBcrNExGIjlt/idVDvbkSm6g1UaurxK708CuIfvwrfgB/JFEePwRzldt1aIqDYjTbQ+qDgoFf+zBoLk25aLVN7AVJuwZLxgyp0iQulNmavWE7vhyo4Pi+sQmhn1aqcU8JOV2b0cWQKYiD2B/K4LodVEURIXhptCvDMVgHTuj45nFWk3sNoj0Sp2rGWuDy8iCvSLyH75fP6X/MHKzuwWWzmrP4In6IdOprbcl3gMM="
+            secure: "AJlLVjNUiwOBK0AgSPgGyDotWYZjg07G2hS68ygupFCDPNsJJC8wNmJIOKy8PGMEX2zJ1LdA0ou/nbyp+zyhLykLauXSwhgwuOZN7gkb7CF3otd5Ae3EQRYXIDRbbCr8hmqkovnZGe3MQRi6BxZEemMkZQd/P0dGT36PBzKdPYSTMqzd0AEwpFHffyPQ/vgPArgNVQaNpEHhrkptg0uQTFXmiFaUoXROrUyCazavQdp534KwVFBWJowerOZVh6NjSESChYWyyPtkLnDuCKy7E+bQpaZtPIC5TOg3hOjBM31+dnszkWAp/sFr0rCNuN/wcUjvI13ssXYRCOanXok79+ctmZb0N/VV1tKhYvwVdgFNDLWbi5PBkYtrTzplN9YhZV4vBjoRDw4RTvtAD21OwkXifRp+JBHK8Lw8EwQa0ttDErf7NLmydrgFV9iZZWV7cA5gANXxwPByzAKP2/oLcbYuCKyPzsy6l+reGe3GJ9/9rjHNDmjkEHSO09ZF3lMU4qysmXH4qCZvnWWkWrm6RUzKzZgR0LX6AfFpMuMTZqm9lOCFycXGjr8Dw7/IfODL59ztoUuNLtnnUKiHg2psC5EM4oDzTxrQpoQfC8yxV0muoUIbS7XbXtwcKQkMxr8EmhlzvsGMarXqubqLOYlc/MSvR25y4CnzyCaZDbbbxFs="
+
+jdk:
+- oraclejdk8
 
 before_script:
     - export DISPLAY=:99.0
