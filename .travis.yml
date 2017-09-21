@@ -8,6 +8,14 @@ addons:
         organization: "artsok-github"
         token:
             secure: $SONAR_TOKEN
+    git
+
+
+cache:
+  directories:
+- '$HOME/.m2/repository'
+
+
 
 jdk:
 - oraclejdk8
@@ -20,3 +28,20 @@ before_script:
 script:
     - mvn test sonar:sonar
     - bash <(curl -s https://codecov.io/bash)
+
+
+deploy:
+  - provider: script
+    script: ".travis/deploy.sh"
+    on:
+      repo: artsok/api-factory
+      branch: master
+      jdk: oraclejdk8
+
+  - provider: script
+    script: ".travis/deploy.sh"
+    skip_cleanup: true
+    on:
+      repo: sbtqa/api-factory
+      tags: true
+jdk: oraclejdk8
