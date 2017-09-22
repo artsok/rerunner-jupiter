@@ -67,7 +67,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     /**
      * Предоставление вызова контекста TestTemplateInvocationContext
      * @param extensionContext - Контейнер тестов (Контекст тестового класса)
-     * @return {@link Stream<TestTemplateInvocationContext>}
+     * @return Stream of TestTemplateInvocationContext
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
