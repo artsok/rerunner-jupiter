@@ -3,17 +3,14 @@ sudo: false
 dist: trusty
 
 addons:
-    sonarcloud:
-        organization: "artsok-github"
-        token:
-            secure: $SONAR_TOKEN
-    github_token:
-      secure: $GIT_TOKEN
+  sonarcloud:
+    organization: "artsok-github"
+      token:
+        secure: $SONAR_TOKEN
 
 cache:
   directories:
-- '$HOME/.m2/repository'
-
+  - '$HOME/.m2/repository'
 
 jdk:
 - oraclejdk8
@@ -27,6 +24,7 @@ deploy:
     on:
       repo: artsok/rerunner-jupiter
       branch: master
+
   - provider: script
     script: ".travis/deploy.sh"
     skip_cleanup: true
