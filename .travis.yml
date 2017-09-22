@@ -3,10 +3,14 @@ sudo: false
 dist: trusty
 
 addons:
-  sonarcloud:
-    organization: "artsok-github"
-      token:
-        secure: $SONAR_TOKEN
+    firefox: latest
+    apt:
+        packages:
+            - google-chrome-stable
+    sonarcloud:
+        organization: "artsok-github"
+        token:
+            secure: $SONAR_TOKEN
 
 cache:
   directories:
