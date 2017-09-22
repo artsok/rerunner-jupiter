@@ -2,7 +2,6 @@ language: java
 sudo: false
 dist: trusty
 
-
 addons:
     sonarcloud:
         organization: "artsok-github"
@@ -11,38 +10,26 @@ addons:
     github_token:
       secure: $GIT_TOKEN
 
-
 cache:
   directories:
 - '$HOME/.m2/repository'
 
 
-
 jdk:
 - oraclejdk8
 
-before_script:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start &
-    - sleep 3
-
 script:
     - mvn test sonar:sonar
-    - bash <(curl -s https://codecov.io/bash)
-
 
 deploy:
   - provider: script
     script: ".travis/deploy.sh"
     on:
-      repo: artsok/api-factory
+      repo: artsok/rerunner-jupiter
       branch: master
-      jdk: oraclejdk8
-
   - provider: script
     script: ".travis/deploy.sh"
     skip_cleanup: true
     on:
-      repo: sbtqa/api-factory
+      repo: artsok/rerunner-jupiter
       tags: true
-jdk: oraclejdk8
