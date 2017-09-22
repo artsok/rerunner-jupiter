@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-package ru.qa.junit.extension;
+package io.github.artsok.extension;
 
 
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
-import ru.qa.junit.RepeatedIfExceptionsTest;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;

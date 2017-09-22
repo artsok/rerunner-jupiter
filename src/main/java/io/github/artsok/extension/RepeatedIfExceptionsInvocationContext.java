@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package ru.qa.junit.extension;
+package io.github.artsok.extension;
 
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 

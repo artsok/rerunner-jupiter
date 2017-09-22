@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-package ru.qa.junit.extension;
+package io.github.artsok.extension;
 
 
-import static ru.qa.junit.RepeatedIfExceptionsTest.*;
+import io.github.artsok.RepeatedIfExceptionsTest;
 
 /**
  * Formatter for extension point @RepeatedIfExceptions
@@ -36,9 +36,9 @@ class RepeatedIfExceptionsDisplayNameFormatter {
 
     String format(int currentRepetition, int totalRepetitions) {
         return this.pattern
-                .replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)
-                .replace(CURRENT_REPETITION_PLACEHOLDER, String.valueOf(currentRepetition))
-                .replace(TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions));
+                .replace(RepeatedIfExceptionsTest.DISPLAY_NAME_PLACEHOLDER, this.displayName)
+                .replace(RepeatedIfExceptionsTest.CURRENT_REPETITION_PLACEHOLDER, String.valueOf(currentRepetition))
+                .replace(RepeatedIfExceptionsTest.TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions));
     }
 
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-package ru.qa.junit;
+package io.github.artsok;
 
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import ru.qa.junit.extension.RepeatIfExceptionsCondition;
+import io.github.artsok.extension.RepeatIfExceptionsCondition;
 
 
 import java.lang.annotation.ElementType;

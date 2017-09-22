@@ -1,7 +1,6 @@
-package ru.qa.junit;
+package io.github.artsok;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 
 import java.io.IOException;
