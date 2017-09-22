@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-openssl aes-256-cbc -K $encrypted_f6a37a5809a3_key -iv $encrypted_f6a37a5809a3_iv -in ./travis/codesigning.asc.enc -out ./travis/codesigning.asc -d
-gpg --fast-import ./travis/codesigning.asc
+openssl aes-256-cbc -K $encrypted_f6a37a5809a3_key -iv $encrypted_f6a37a5809a3_iv -in .travis/codesigning.asc.enc -out .travis/codesigning.asc -d
+gpg --fast-import .travis/codesigning.asc
 
 if [ ! -z "$TRAVIS_TAG" ]
 then
