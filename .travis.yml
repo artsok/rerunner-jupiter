@@ -8,7 +8,8 @@ addons:
         organization: "artsok-github"
         token:
             secure: $SONAR_TOKEN
-    git
+    github_token:
+      secure: $GIT_TOKEN
 
 
 cache:

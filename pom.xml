@@ -6,7 +6,6 @@
     <groupId>ru.qa.junit</groupId>
     <artifactId>rerunner-jupiter</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <name>Rerunner-Jupiter</name>
     <description>
         JUnit 5 Extension point which rerun failed tests certain number of times
@@ -25,7 +24,6 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
     <scm>
         <url>https://github.com/artsok/rerunner-jupiter</url>
         <connection>scm:git:git://github.com/artsok/rerunner-jupiter.git</connection>
@@ -50,6 +48,10 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
     <dependencies>
         <dependency>
@@ -85,23 +87,14 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.2</version>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <connectionUrl>scm:git:https://github.com/artsok/rerunner-jupiter.git</connectionUrl>
-                    <stagingRepository>ossrh::default::https://oss.sonatype.org/content/repositories/snapshots</stagingRepository>
-                    <autoversionsubmodules>true</autoversionsubmodules>
-                    <usereleaseprofile>false</usereleaseprofile>
-                    <releaseprofiles>release</releaseprofiles>
-                    <goals>deploy</goals>
-                    <checkmodificationexcludes>
-                        <checkmodificationexclude>./travis/*.sh</checkmodificationexclude>
-                        <checkmodificationexclude>**/*.java</checkmodificationexclude>
-                        <checkmodificationexclude>**/*.md</checkmodificationexclude>
-                        <checkmodificationexclude>**/pom.xml</checkmodificationexclude>
-                        <checkmodificationexclude>.travis.yml</checkmodificationexclude>
-                    </checkmodificationexcludes>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
             <plugin>
