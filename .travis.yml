@@ -3,10 +3,6 @@ sudo: false
 dist: trusty
 
 addons:
-    firefox: latest
-    apt:
-        packages:
-            - google-chrome-stable
     sonarcloud:
         organization: "artsok-github"
         token:
