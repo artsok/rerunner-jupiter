@@ -30,8 +30,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
     private final int totalRepetitions;
     private final RepeatedIfExceptionsDisplayNameFormatter formatter;
 
-    RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions,
-                                          RepeatedIfExceptionsDisplayNameFormatter formatter) {
+    RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, RepeatedIfExceptionsDisplayNameFormatter formatter) {
         this.currentRepetition = currentRepetition;
         this.totalRepetitions = totalRepetitions;
         this.formatter = formatter;

@@ -16,32 +16,25 @@
  */
 package io.github.artsok;
 
+import io.github.artsok.extension.RepeatIfExceptionsCondition;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import io.github.artsok.extension.RepeatIfExceptionsCondition;
-
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
-/**
- * Объявляем аннотацию, которую будет вешать на методы.
- * Обработчик данной аннотации класс {@link RepeatIfExceptionsCondition}
- */
-
-
 /**
  * Annotation which you can put to test method
  * Customize number of repeats and set for what exception you want handler.
  * By default handler Exception.class
+ * All logic of this extension at {@link RepeatIfExceptionsCondition}
  *
  * @author Artem Sokovets
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @TestTemplate
 @ExtendWith(RepeatIfExceptionsCondition.class)
