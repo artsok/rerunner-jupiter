@@ -7,7 +7,8 @@
 ### HOW TO USE
 
 ```java
-            /** Repeated three times if test failed.
+           /** 
+            * Repeated three times if test failed.
             * By default Exception.class will be handled in test
             */
            @RepeatedIfExceptionsTest(repeats = 3)
