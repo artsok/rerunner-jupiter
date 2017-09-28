@@ -11,7 +11,7 @@ import java.io.IOException;
  *
  * @author Artem Sokovets
  */
-class ReRunnerTest {
+class ReRunnerExample {
 
     /**
      * Repeated three times if test failed.

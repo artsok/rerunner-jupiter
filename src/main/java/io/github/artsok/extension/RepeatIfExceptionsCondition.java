@@ -18,6 +18,7 @@ package io.github.artsok.extension;
 
 
 import io.github.artsok.RepeatedIfExceptionsTest;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -46,6 +47,7 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
  *
  * @author Artem Sokovets
  */
+@Slf4j
 public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
 
     private boolean exceptionAppear = false;
@@ -76,6 +78,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
                         + "unless the test class is annotated with @RepeatedIfExceptionsTest."))
                 .repeats();
+        log.debug("Total repeats '{}'", totalRepeats);
 
         Method testMethod = Preconditions.notNull(extensionContext.getTestMethod()
                 .orElse(null), "test method must not be null");
@@ -102,8 +105,12 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions();
+        log.debug("Exceptions Pool in RepeatedIfExceptionsTest'{}'", exceptionPool);
+
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
+        log.debug("Exception in test '{}'", exception);
+
         exceptionAppear = exceptionAppear || of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
     }
