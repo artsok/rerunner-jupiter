@@ -6,6 +6,15 @@
 
 ### HOW TO USE
 
+```xml
+<dependency>
+    <groupId>io.github.artsok</groupId>
+    <artifactId>rerunner-jupiter</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+
 ```java
            /** 
             * Repeated three times if test failed.
