@@ -2,11 +2,10 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter)
 [![Build Status](https://travis-ci.org/artsok/rerunner-jupiter.svg?branch=master)](https://travis-ci.org/artsok/rerunner-jupiter)
 
-### Extension for Junit 5. Re-run failed JUnit tests immediately.
-### Very useful when you UI/API tests don't stable.
+*rerunner-jupiter* is a extension for Junit 5. Re-run failed JUnit-Jupiter tests immediately. Very useful when you UI/API tests don't stable. 
+This library is open source, released under the terms of [Apache 2.0 License].
 
-## HOW TO USE
-
+## How To Use
 ```xml
 <dependency>
     <groupId>io.github.artsok</groupId>
@@ -15,7 +14,7 @@
 </dependency>
 ```
 
-## EXAMPLES
+## Examples
 ```java
            /** 
             * Repeated three times if test failed.
