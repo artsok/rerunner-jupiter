@@ -1,19 +1,14 @@
 package io.github.artsok;
 
-import io.github.artsok.extension.RepeatIfExceptionsCondition;
 import io.github.artsok.extension.RepeatedIfException;
 import io.github.artsok.extension.RepeatedIfExceptionsInvocationContext;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MockitoTest {
-
-    @Mock
-    RepeatIfExceptionsCondition repeatIfExceptionsCondition;
 
     @Test
     void testRepeatedIfException() {

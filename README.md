@@ -41,7 +41,8 @@
             * Set formatter for test. Like behavior as at {@link org.junit.jupiter.api.RepeatedTest}
             * @throws IOException - error occurred
             */
-           @RepeatedIfExceptionsTest(repeats = 10, exceptions = IOException.class, name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
+           @RepeatedIfExceptionsTest(repeats = 10, exceptions = IOException.class, 
+           name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
            void reRunTest3() throws IOException {
                throw new IOException("Exception in I/O operation");
            }
