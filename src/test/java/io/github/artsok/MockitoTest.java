@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 public class MockitoTest {
 
     @Test
-    void testRepeatedIfException() {
+    public void testRepeatedIfException() {
         Throwable exception = assertThrows(RepeatedIfException.class, () -> {
             throw new RepeatedIfException("RepeatedIfException");
         });
@@ -19,14 +19,13 @@ public class MockitoTest {
     }
 
     @Test
-    void testRepeatedIfExceptionsInvocationContext() {
+    public void testRepeatedIfExceptionsInvocationContext() {
         RepeatedIfExceptionsInvocationContext repeatedIfExceptionsInvocationContext
                 = mock(RepeatedIfExceptionsInvocationContext.class);
         when(repeatedIfExceptionsInvocationContext.getDisplayName(2))
                 .thenReturn("Repetition if test failed 1 of 2");
         assertSame(repeatedIfExceptionsInvocationContext.getDisplayName(2),
                 "Repetition if test failed 1 of 2", () -> "testRepeatedIfExceptionsInvocationContext");
-
     }
 
 }
