@@ -51,4 +51,13 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            void reRunTest3() throws IOException {
                throw new IOException("Exception in I/O operation");
            }
+           
+           /**
+           *  Repeated three times if selenium test failed.
+           */
+           @RepeatedIfExceptionsTest(repeats = 3, exceptions = NoSuchElementException.class)
+           void testWithChrome(ChromeDriver chrome)  {
+                chrome.get("http://yandex.ru");
+                chrome.findElement(By.xpath("//span[@id='authors']"));
+           }
 ```
