@@ -1,6 +1,7 @@
 package io.github.artsok;
 
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 
 import java.io.IOException;
@@ -12,6 +13,12 @@ import java.io.IOException;
  * @author Artem Sokovets
  */
 class ReRunnerExample {
+
+
+    @RepeatedIfExceptionsTest(repeats = 2)
+    void runTest() {
+        Assertions.assertTrue(true, () -> "No exception, repeat one times");
+    }
 
     /**
      * Repeated three times if test failed.
