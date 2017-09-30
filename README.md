@@ -8,6 +8,9 @@ Re-run failed JUnit-Jupiter tests immediately. Very useful when you UI/API tests
 This library is open source, released under the terms of [Apache 2.0 License].
 
 ## How To Use
+
+In order to include *rerunner-jupiter* in a Maven project, first add the following dependency to your `pom.xml` (Java 8 required):
+
 ```xml
 <dependency>
     <groupId>io.github.artsok</groupId>
