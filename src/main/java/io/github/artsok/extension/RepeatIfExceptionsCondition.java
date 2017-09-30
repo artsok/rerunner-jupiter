@@ -84,7 +84,8 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .orElse(null), "test method must not be null");
         String displayName = extensionContext.getDisplayName();
         RepeatedIfExceptionsTest repeatedIfThrowableTest =
-                findAnnotation(testMethod, RepeatedIfExceptionsTest.class).get();
+                findAnnotation(testMethod, RepeatedIfExceptionsTest.class)
+                        .orElseThrow(() -> new RepeatedIfException("Can't find annotation RepeatedIfExceptionsTest on test method"));
         formatter = displayNameFormatter(repeatedIfThrowableTest, displayName);
 
         //Convert our logic of repeated handler to spliterator
@@ -125,7 +126,8 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private RepeatedIfExceptionsDisplayNameFormatter displayNameFormatter(RepeatedIfExceptionsTest test, String displayName) {
         String pattern = test.name().trim();
         if (StringUtils.isBlank(pattern)) {
-            pattern = AnnotationUtils.getDefaultValue(test, "name", String.class).get();
+            pattern = AnnotationUtils.getDefaultValue(test, "name", String.class)
+                    .orElseThrow(() -> new RepeatedIfException("Exception occurred with name parameter of RepeatedIfExceptionsTest annotation"));
         }
         return new RepeatedIfExceptionsDisplayNameFormatter(pattern, displayName);
     }
