@@ -1,10 +1,11 @@
 # rerunner-jupiter
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter)
 [![Build Status](https://travis-ci.org/artsok/rerunner-jupiter.svg?branch=master)](https://travis-ci.org/artsok/rerunner-jupiter)
 
 ### Extension for Junit 5. Re-run failed JUnit tests immediately.
 ### Very useful when you UI/API tests don't stable.
 
-### HOW TO USE
+## HOW TO USE
 
 ```xml
 <dependency>
@@ -14,7 +15,7 @@
 </dependency>
 ```
 
-
+## EXAMPLES
 ```java
            /** 
             * Repeated three times if test failed.
