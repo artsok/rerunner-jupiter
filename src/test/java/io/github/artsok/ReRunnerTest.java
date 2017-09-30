@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Artem Sokovets
  */
-class ReRunnerExample {
+class ReRunnerTest {
 
 
     @RepeatedIfExceptionsTest(repeats = 2)
