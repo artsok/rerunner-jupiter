@@ -14,4 +14,4 @@ fi
 
 #mvn clean deploy --settings .travis/settings.xml -DskipTests=true -B -U
 
-mvn clean deploy -P release -DskipTests=true --settings .travis/settings.xml
+mvn clean deploy -P release --settings .travis/settings.xml
