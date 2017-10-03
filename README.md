@@ -53,7 +53,7 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            }
            
            /**
-           *  Repeated three times if selenium test failed.
+           *  Repeated three times if selenium test failed. Use selenium-jupiter extension.
            */
            @RepeatedIfExceptionsTest(repeats = 3, exceptions = NoSuchElementException.class)
            void testWithChrome(ChromeDriver chrome)  {
