@@ -1,6 +1,7 @@
 # rerunner-jupiter
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter)
 [![Build Status](https://travis-ci.org/artsok/rerunner-jupiter.svg?branch=master)](https://travis-ci.org/artsok/rerunner-jupiter)
+[![badge-jdk-8](https://img.shields.io/badge/jdk-8-yellow.svg "JDK-8")]
 [![License badge](https://img.shields.io/badge/license-Apache2-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 *rerunner-jupiter* is a extension for Junit 5. 
