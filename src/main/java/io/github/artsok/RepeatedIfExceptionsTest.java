@@ -75,9 +75,9 @@ public @interface RepeatedIfExceptionsTest {
      */
     String LONG_DISPLAY_NAME = DISPLAY_NAME_PLACEHOLDER + " :: " + SHORT_DISPLAY_NAME;
 
-
     Class<? extends Exception>[] exceptions() default Exception.class;
     int repeats();
+    int minSuccess() default 1;
     String name() default SHORT_DISPLAY_NAME;
 
 }

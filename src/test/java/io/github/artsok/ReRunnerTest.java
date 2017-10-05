@@ -1,9 +1,12 @@
 package io.github.artsok;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,9 +16,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Artem Sokovets
  */
+@Slf4j
 class ReRunnerTest {
 
+    private ThreadLocalRandom random = ThreadLocalRandom.current();
 
+    @Disabled
+    @DisplayName("All required all succeed")
+    @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
+            name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
+    void reRunTest4() throws IOException {
+        if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
+            throw new RuntimeException("Error in Test");
+        }
+    }
+
+
+    @RepeatedIfExceptionsTest(repeats = 5, minSuccess = 2) //Т.е если два раза прошли тесты, остальные репиты мы отключаем
+    void reRunTest5() {
+        System.out.println("Я запустил тест " + 5 + random.nextInt());
+//        if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
+//            throw new RuntimeException("Error in Test");
+//        }
+        //1. Проходит
+        //2. Проходит
+        //3. Отключаем остальные тесты
+    }
+
+
+    @Disabled
     @RepeatedIfExceptionsTest(repeats = 2)
     void runTest() {
         assertTrue(true, () -> "No exception, repeat one time");

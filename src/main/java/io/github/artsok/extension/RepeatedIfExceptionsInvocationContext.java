@@ -16,7 +16,11 @@
  */
 package io.github.artsok.extension;
 
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junit.jupiter.api.extension.*;
+
+import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 
 /**
@@ -40,5 +44,21 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
     public String getDisplayName(int invocationIndex) {
         return this.formatter.format(this.currentRepetition, this.totalRepetitions);
     }
+
+    @Override
+    public List<Extension> getAdditionalExtensions() {
+        return singletonList(new RepeatExecutionCondition());
+    }
+
 }
 
+
+
+class RepeatExecutionCondition implements ExecutionCondition {
+
+    @Override
+    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+        System.out.println("Мы вызвались!!!!");
+        return ConditionEvaluationResult.enabled("");
+    }
+}

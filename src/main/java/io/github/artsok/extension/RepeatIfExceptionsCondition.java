@@ -19,18 +19,13 @@ package io.github.artsok.extension;
 
 import io.github.artsok.RepeatedIfExceptionsTest;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Spliterators.spliteratorUnknownSize;
@@ -54,6 +49,10 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
     private int totalRepeats = 0;
 
+    private int minSuccess = 0;
+
+    List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
 
     /**
@@ -63,8 +62,17 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public boolean supportsTestTemplate(ExtensionContext extensionContext) {
+
         return isAnnotated(extensionContext.getTestMethod(), RepeatedIfExceptionsTest.class);
     }
+
+    //TODO: Check input params
+    private void validateParams(Optional<RepeatedIfExceptionsTest> optional) {
+        optional.orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
+                + "unless the test class is annotated with @RepeatedIfExceptionsTest.")).repeats();
+        //Проверить
+    }
+
 
     /**
      * Context call TestTemplateInvocationContext
@@ -79,6 +87,14 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                         + "unless the test class is annotated with @RepeatedIfExceptionsTest."))
                 .repeats();
         log.debug("Total repeats '{}'", totalRepeats);
+
+         minSuccess= extensionContext.getTestMethod()
+                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
+                .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
+                        + "unless the test class is annotated with @RepeatedIfExceptionsTest."))
+                .minSuccess();
+
+        System.out.println("Total minSucces '{}'" + minSuccess);
 
         Method testMethod = Preconditions.notNull(extensionContext.getTestMethod()
                 .orElse(null), "test method must not be null");
@@ -106,15 +122,43 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions();
-        log.debug("Exceptions Pool in RepeatedIfExceptionsTest'{}'", exceptionPool);
+        log.info("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
 
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
-        log.debug("Exception in test '{}'", exception);
+        log.info("Exception in test '{}'", exception);
+
+
 
         exceptionAppear = exceptionAppear || of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
+
+      historyExceptionAppear.add(of(exceptionPool)
+              .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception)));
+
+        System.out.println("exceptionAppear " + of(exceptionPool)
+                .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception)));
+
+        System.out.println("Обработка исключения");
+
     }
+
+
+//    @Override
+//    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+//        log.info("Запуск перед тестом");
+//        log.info(context.getUniqueId());
+//
+//        //Если два предыдущих раза тест прошел
+//        System.out.println("! " + historyExceptionAppear);
+//
+//        //То отключаем все остальные тесты. Помечаем как skip
+//        if (false) {
+//            return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
+//        } else {
+//            return ConditionEvaluationResult.enabled("");
+//        }
+//    }
 
 
     /**
