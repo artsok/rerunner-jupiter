@@ -32,12 +32,12 @@ class ReRunnerTest {
     }
 
 
-    @RepeatedIfExceptionsTest(repeats = 5, minSuccess = 2) //Т.е если два раза прошли тесты, остальные репиты мы отключаем
+    @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 2) //Т.е если два раза прошли тесты, остальные репиты мы отключаем
     void reRunTest5() {
         System.out.println("Я запустил тест " + 5 + random.nextInt());
-//        if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
-//            throw new RuntimeException("Error in Test");
-//        }
+        if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
+            throw new RuntimeException("Error in Test");
+        }
         //1. Проходит
         //2. Проходит
         //3. Отключаем остальные тесты

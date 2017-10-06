@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Stream.of;
 import static java.util.stream.StreamSupport.stream;
+import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.create;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
@@ -51,7 +52,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
     private int minSuccess = 0;
 
-    List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+    static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
 
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
 
@@ -94,7 +95,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                         + "unless the test class is annotated with @RepeatedIfExceptionsTest."))
                 .minSuccess();
 
-        System.out.println("Total minSucces '{}'" + minSuccess);
+        System.out.println("Total minSucces - " + minSuccess);
 
         Method testMethod = Preconditions.notNull(extensionContext.getTestMethod()
                 .orElse(null), "test method must not be null");
@@ -110,6 +111,19 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         return stream(spliterator, false);
     }
 
+//
+//    @Override
+//    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+//        //Если два предыдущих раза тест прошел
+//        log.info("ConditionEvaluationResult");
+//        //То отключаем все остальные тесты. Помечаем как skip
+//        if (false) {
+//            return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
+//        } else {
+//            return ConditionEvaluationResult.enabled("");
+//        }
+//
+//    }
 
     /**
      * Check if exceptions that will appear in test same as we wait
@@ -128,38 +142,18 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
         log.info("Exception in test '{}'", exception);
 
-
-
         exceptionAppear = exceptionAppear || of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
 
       historyExceptionAppear.add(of(exceptionPool)
               .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception)));
 
-        System.out.println("exceptionAppear " + of(exceptionPool)
+        System.out.println("Появилось исключение -  " + of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception)));
 
         System.out.println("Обработка исключения");
 
     }
-
-
-//    @Override
-//    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-//        log.info("Запуск перед тестом");
-//        log.info(context.getUniqueId());
-//
-//        //Если два предыдущих раза тест прошел
-//        System.out.println("! " + historyExceptionAppear);
-//
-//        //То отключаем все остальные тесты. Помечаем как skip
-//        if (false) {
-//            return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
-//        } else {
-//            return ConditionEvaluationResult.enabled("");
-//        }
-//    }
-
 
     /**
      * Handler for display name

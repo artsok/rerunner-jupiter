@@ -16,10 +16,13 @@
  */
 package io.github.artsok.extension;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import com.sun.xml.internal.ws.server.provider.SyncProviderInvokerTube;
 import org.junit.jupiter.api.extension.*;
 
 import java.util.List;
 
+import static io.github.artsok.extension.RepeatIfExceptionsCondition.historyExceptionAppear;
 import static java.util.Collections.singletonList;
 
 
@@ -56,9 +59,16 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 
 class RepeatExecutionCondition implements ExecutionCondition {
 
+
+
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        System.out.println("Мы вызвались!!!!");
+        if(historyExceptionAppear.size() > 1 ) {
+            int size = historyExceptionAppear.size();
+            if(!historyExceptionAppear.get(size - 1) && !historyExceptionAppear.get(size - 2)) {
+                return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
+            }
+        }
         return ConditionEvaluationResult.enabled("");
     }
 }
