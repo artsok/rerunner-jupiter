@@ -19,7 +19,10 @@ package io.github.artsok.extension;
 
 import io.github.artsok.RepeatedIfExceptionsTest;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
@@ -31,7 +34,6 @@ import java.util.stream.Stream;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Stream.of;
 import static java.util.stream.StreamSupport.stream;
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.create;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
@@ -47,14 +49,10 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
 
     private boolean exceptionAppear = false;
-
     private int totalRepeats = 0;
-
-    private int minSuccess = 0;
-
-    static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
-
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
+    static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+    static int minSuccess = 0;
 
     /**
      * Check that test method contain {@link RepeatedIfExceptionsTest} annotation
@@ -82,20 +80,14 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
-        totalRepeats = extensionContext.getTestMethod()
+        RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
-                        + "unless the test class is annotated with @RepeatedIfExceptionsTest."))
-                .repeats();
-        log.debug("Total repeats '{}'", totalRepeats);
+                        + "unless the test class is annotated with @RepeatedIfExceptionsTest."));
 
-         minSuccess= extensionContext.getTestMethod()
-                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
-                .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
-                        + "unless the test class is annotated with @RepeatedIfExceptionsTest."))
-                .minSuccess();
-
-        System.out.println("Total minSucces - " + minSuccess);
+        totalRepeats = annotationParams.repeats();
+        minSuccess= annotationParams.minSuccess();
+        log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
         Method testMethod = Preconditions.notNull(extensionContext.getTestMethod()
                 .orElse(null), "test method must not be null");
@@ -111,19 +103,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         return stream(spliterator, false);
     }
 
-//
-//    @Override
-//    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-//        //Если два предыдущих раза тест прошел
-//        log.info("ConditionEvaluationResult");
-//        //То отключаем все остальные тесты. Помечаем как skip
-//        if (false) {
-//            return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
-//        } else {
-//            return ConditionEvaluationResult.enabled("");
-//        }
-//
-//    }
 
     /**
      * Check if exceptions that will appear in test same as we wait

@@ -16,13 +16,12 @@
  */
 package io.github.artsok.extension;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import com.sun.xml.internal.ws.server.provider.SyncProviderInvokerTube;
 import org.junit.jupiter.api.extension.*;
 
 import java.util.List;
 
 import static io.github.artsok.extension.RepeatIfExceptionsCondition.historyExceptionAppear;
+import static io.github.artsok.extension.RepeatIfExceptionsCondition.minSuccess;
 import static java.util.Collections.singletonList;
 
 
@@ -56,18 +55,17 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 }
 
 
-
+/**
+ * Implements ExecutionCondition interface.
+ * With one method in this interface, we can control of on/off executing test
+ */
 class RepeatExecutionCondition implements ExecutionCondition {
-
-
 
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if(historyExceptionAppear.size() > 1 ) {
-            int size = historyExceptionAppear.size();
-            if(!historyExceptionAppear.get(size - 1) && !historyExceptionAppear.get(size - 2)) {
+        if(historyExceptionAppear.size() >= minSuccess
+                && historyExceptionAppear.stream().skip(historyExceptionAppear.size() - minSuccess).noneMatch(b -> b)) {
                 return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
-            }
         }
         return ConditionEvaluationResult.enabled("");
     }
