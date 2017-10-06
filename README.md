@@ -50,7 +50,7 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            @RepeatedIfExceptionsTest(repeats = 10, exceptions = IOException.class, 
            name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
            void reRunTest3() throws IOException {
-               throw new IOException("Exception in I/O operation");
+                throw new IOException("Exception in I/O operation");
            }
            
            /**
@@ -61,4 +61,17 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
                 chrome.get("http://yandex.ru");
                 chrome.findElement(By.xpath("//span[@id='authors']"));
            }
+           
+           /**
+           * Repeated 100 times with minimum success four times, then disabled all remaining repeats.
+           * See image below how it works. Default exception is Exception.class
+           */
+           @DisplayName("Test Case Name")
+           @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
+           void reRunTest4() {
+                if(random.nextInt() % 2 == 0) {
+                    throw new RuntimeException("Error in Test");
+                }
+           }
+           
 ```

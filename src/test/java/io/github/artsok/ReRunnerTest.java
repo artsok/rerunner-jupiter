@@ -26,7 +26,7 @@ class ReRunnerTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    @DisplayName("All required all succeed")
+    @DisplayName("Name for our test")
     @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
             name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
     void reRunTest4() throws IOException {
@@ -35,25 +35,16 @@ class ReRunnerTest {
         }
     }
 
-    @Disabled
-    @Test
-    void test1() {
-        List<Integer> a = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
-        boolean b1 = a.stream().skip(a.size() - 4).allMatch(b -> Objects.equals(b, b));
-        System.out.println(b1);
-    }
-
-
-
-    @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4) //Т.е если два раза прошли тесты, остальные репиты мы отключаем
+    /**
+     * Repeated 100 times with minimum success four times, then disabled all remaining repeats.
+     * See image below how it works. Default exception is Exception.class
+     */
+    @DisplayName("Test Case Name")
+    @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
     void reRunTest5() {
-        System.out.println("Я запустил тест " + 5 + random.nextInt());
-        if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
+        if(random.nextInt() % 2 == 0) {
             throw new RuntimeException("Error in Test");
         }
-        //1. Проходит
-        //2. Проходит
-        //3. Отключаем остальные тесты
     }
 
 
