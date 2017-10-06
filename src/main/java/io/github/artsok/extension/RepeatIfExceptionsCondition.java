@@ -27,7 +27,6 @@ import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -36,7 +35,6 @@ import static java.util.stream.Stream.of;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
-
 
 
 /**
@@ -52,50 +50,43 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private int totalRepeats = 0;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
     static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
-    static int minSuccess = 0;
+    static long minSuccess = 0;
 
     /**
      * Check that test method contain {@link RepeatedIfExceptionsTest} annotation
+     *
      * @param extensionContext - encapsulates the context in which the current test or container is being executed
      * @return true/false
      */
     @Override
     public boolean supportsTestTemplate(ExtensionContext extensionContext) {
-
         return isAnnotated(extensionContext.getTestMethod(), RepeatedIfExceptionsTest.class);
-    }
-
-    //TODO: Check input params
-    private void validateParams(Optional<RepeatedIfExceptionsTest> optional) {
-        optional.orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
-                + "unless the test class is annotated with @RepeatedIfExceptionsTest.")).repeats();
-        //Проверить
     }
 
 
     /**
      * Context call TestTemplateInvocationContext
+     *
      * @param extensionContext - Test Class Context
      * @return Stream of TestTemplateInvocationContext
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
+        Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
+
         RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
-                        + "unless the test class is annotated with @RepeatedIfExceptionsTest."));
+                        + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
 
         totalRepeats = annotationParams.repeats();
-        minSuccess= annotationParams.minSuccess();
+        minSuccess = annotationParams.minSuccess();
+        Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
+        Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
         log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
-        Method testMethod = Preconditions.notNull(extensionContext.getTestMethod()
-                .orElse(null), "test method must not be null");
         String displayName = extensionContext.getDisplayName();
-        RepeatedIfExceptionsTest repeatedIfThrowableTest =
-                findAnnotation(testMethod, RepeatedIfExceptionsTest.class)
-                        .orElseThrow(() -> new RepeatedIfException("Can't find annotation RepeatedIfExceptionsTest on test method"));
-        formatter = displayNameFormatter(repeatedIfThrowableTest, displayName);
+        formatter = displayNameFormatter(annotationParams, displayName);
 
         //Convert our logic of repeated handler to spliterator
         Spliterator<TestTemplateInvocationContext> spliterator =
@@ -106,7 +97,8 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
     /**
      * Check if exceptions that will appear in test same as we wait
-     * @param extensionContext  - Test Class Context
+     *
+     * @param extensionContext - Test Class Context
      * @throws Exception - error if occurred
      */
     @Override
@@ -120,23 +112,16 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
         log.info("Exception in test '{}'", exception);
-
-        exceptionAppear = exceptionAppear || of(exceptionPool)
+        boolean result = of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
-
-      historyExceptionAppear.add(of(exceptionPool)
-              .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception)));
-
-        System.out.println("Появилось исключение -  " + of(exceptionPool)
-                .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception)));
-
-        System.out.println("Обработка исключения");
-
+        historyExceptionAppear.add(result);
+        exceptionAppear = exceptionAppear || result;
     }
 
     /**
      * Handler for display name
-     * @param test - RepeatedIfExceptionsTest annotation
+     *
+     * @param test        - RepeatedIfExceptionsTest annotation
      * @param displayName - Name that will be represent to report
      * @return RepeatedIfExceptionsDisplayNameFormatter {@link RepeatedIfExceptionsDisplayNameFormatter}
      */
@@ -158,17 +143,17 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         @Override
         public boolean hasNext() {
-            if(currentIndex == 0) {
+            if (currentIndex == 0) {
                 return true;
             }
             return exceptionAppear && currentIndex < totalRepeats ? true : false;
         }
 
         @Override
-        public TestTemplateInvocationContext next()  {
-            if(hasNext()) {
+        public TestTemplateInvocationContext next() {
+            if (hasNext()) {
                 currentIndex++;
-                return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats,  formatter);
+                return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats, formatter);
             }
             throw new NoSuchElementException();
         }

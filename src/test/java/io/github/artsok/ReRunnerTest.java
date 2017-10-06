@@ -26,7 +26,6 @@ class ReRunnerTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    @Disabled
     @DisplayName("All required all succeed")
     @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
             name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
