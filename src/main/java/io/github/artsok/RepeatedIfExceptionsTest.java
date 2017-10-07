@@ -75,9 +75,27 @@ public @interface RepeatedIfExceptionsTest {
      */
     String LONG_DISPLAY_NAME = DISPLAY_NAME_PLACEHOLDER + " :: " + SHORT_DISPLAY_NAME;
 
-
+    /**
+     * Pool of exceptions
+     * @return Exception that handlered
+     */
     Class<? extends Exception>[] exceptions() default Exception.class;
-    int repeats();
-    String name() default SHORT_DISPLAY_NAME;
 
+    /**
+     * Number of repeats
+     * @return N-times repeat test if it failed
+     */
+    int repeats();
+
+    /**
+     * Minimum success
+     * @return After n-times of passed tests will disable all remaining repeats.
+     */
+    int minSuccess() default 1;
+
+    /**
+     * Display name for test method
+     * @return Short name
+     */
+    String name() default SHORT_DISPLAY_NAME;
 }

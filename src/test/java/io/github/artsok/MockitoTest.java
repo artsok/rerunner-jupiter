@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MockitoTest {
+class MockitoTest {
 
     @Test
-    public void testRepeatedIfException() {
+    void testRepeatedIfException() {
         Throwable exception = assertThrows(RepeatedIfException.class, () -> {
             throw new RepeatedIfException("RepeatedIfException");
         });
@@ -19,13 +19,13 @@ public class MockitoTest {
     }
 
     @Test
-    public void testRepeatedIfExceptionsInvocationContext() {
+    void testRepeatedIfExceptionsInvocationContext() {
         RepeatedIfExceptionsInvocationContext repeatedIfExceptionsInvocationContext
                 = mock(RepeatedIfExceptionsInvocationContext.class);
         when(repeatedIfExceptionsInvocationContext.getDisplayName(2))
                 .thenReturn("Repetition if test failed 1 of 2");
         assertSame(repeatedIfExceptionsInvocationContext.getDisplayName(2),
-                "Repetition if test failed 1 of 2", () -> "testRepeatedIfExceptionsInvocationContext");
+                "Repetition if test failed 1 of 2", "testRepeatedIfExceptionsInvocationContext");
     }
 
 }
