@@ -21,11 +21,11 @@ package io.github.artsok.extension;
  *
  * @author Artem Sokovets
  */
-public class RepeatedIfException extends RuntimeException {
+class RepeatedIfException extends RuntimeException {
 
     private static final long serialVersionUID = -453323380293211043L;
 
-    public RepeatedIfException(String message) {
+    RepeatedIfException(String message) {
         super(message);
     }
 }

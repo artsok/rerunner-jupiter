@@ -50,7 +50,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private int totalRepeats = 0;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
     static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
-    static long minSuccess = 0;
+    static final String MINIMUM_SUCCESS_KEY = "MINIMUM_SUCCESS_KEY";
 
     /**
      * Check that test method contain {@link RepeatedIfExceptionsTest} annotation
@@ -80,15 +80,16 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                         + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
 
         totalRepeats = annotationParams.repeats();
-        minSuccess = annotationParams.minSuccess();
+        int minSuccess = annotationParams.minSuccess();
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
+        extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(MINIMUM_SUCCESS_KEY, minSuccess);
         log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
         String displayName = extensionContext.getDisplayName();
         formatter = displayNameFormatter(annotationParams, displayName);
 
-        //Convert our logic of repeated handler to spliterator
+        //Convert logic of repeated handler to spliterator
         Spliterator<TestTemplateInvocationContext> spliterator =
                 spliteratorUnknownSize(new TestTemplateIterator(), Spliterator.NONNULL);
         return stream(spliterator, false);

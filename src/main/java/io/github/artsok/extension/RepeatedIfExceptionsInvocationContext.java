@@ -20,8 +20,8 @@ import org.junit.jupiter.api.extension.*;
 
 import java.util.List;
 
+import static io.github.artsok.extension.RepeatIfExceptionsCondition.MINIMUM_SUCCESS_KEY;
 import static io.github.artsok.extension.RepeatIfExceptionsCondition.historyExceptionAppear;
-import static io.github.artsok.extension.RepeatIfExceptionsCondition.minSuccess;
 import static java.util.Collections.singletonList;
 
 
@@ -60,11 +60,11 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
  * With one method in this interface, we can control of on/off executing test
  */
 class RepeatExecutionCondition implements ExecutionCondition {
-
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+        int minSuccess = (int) context.getStore(ExtensionContext.Namespace.GLOBAL).get(MINIMUM_SUCCESS_KEY);
         if(historyExceptionAppear.size() >= minSuccess
-                && historyExceptionAppear.stream().skip(historyExceptionAppear.size() - minSuccess).noneMatch(b -> b)) {
+                && historyExceptionAppear.stream().skip(historyExceptionAppear.size() - (long) minSuccess).noneMatch(b -> b)) {
                 return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
         }
         return ConditionEvaluationResult.enabled("");
