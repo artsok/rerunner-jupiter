@@ -21,6 +21,7 @@ class ReRunnerTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
+    @Disabled
     @DisplayName("Name for our test")
     @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
             name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
@@ -34,6 +35,7 @@ class ReRunnerTest {
      * Repeated 100 times with minimum success four times, then disabled all remaining repeats.
      * See image below how it works. Default exception is Exception.class
      */
+    @Disabled
     @DisplayName("Test Case Name")
     @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
     void reRunTest5() {
