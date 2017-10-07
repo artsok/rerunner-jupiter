@@ -108,11 +108,11 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions();
-        log.info("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
+        log.debug("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
 
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
-        log.info("Exception in test '{}'", exception);
+        log.debug("Exception in test '{}'", exception);
         boolean result = of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
         historyExceptionAppear.add(result);
