@@ -18,7 +18,9 @@ package io.github.artsok.extension;
 
 
 import io.github.artsok.RepeatedIfExceptionsTest;
+import io.github.artsok.properties.ReRunConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -45,6 +47,8 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
  */
 @Slf4j
 public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
+
+    ReRunConfig rrf = ConfigFactory.create(ReRunConfig.class);
 
     private boolean exceptionAppear = false;
     private int totalRepeats = 0;

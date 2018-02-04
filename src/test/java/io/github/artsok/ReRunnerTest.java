@@ -60,7 +60,7 @@ class ReRunnerTest {
 
 
     @DisplayName("Name for our test")
-    @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
+    @RepeatedIfExceptionsTest(repeats = 2, exceptions = RuntimeException.class,
             name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
     void reRunTest4() throws IOException {
         if(random.nextInt() % 2 == 0) { //Исключение бросается рандомно
@@ -76,6 +76,15 @@ class ReRunnerTest {
     @DisplayName("Test Case Name")
     @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
     void reRunTest5() {
+        if(random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Error in Test");
+        }
+    }
+
+
+    @DisplayName("Test Case Name111")
+    @RepeatedIfExceptionsTest(repeats = 2, minSuccess = 1)
+    void reRunTest6() {
         if(random.nextInt() % 2 == 0) {
             throw new RuntimeException("Error in Test");
         }

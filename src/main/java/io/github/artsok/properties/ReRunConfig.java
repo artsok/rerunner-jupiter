@@ -2,22 +2,28 @@ package io.github.artsok.properties;
 
 import org.aeonbits.owner.Config;
 
+import java.util.List;
+
 /**
  * Config for Owner Framework
  *
  * @author Artem Sokovets
  */
-public interface ReRunConfig implements Config {
+public interface ReRunConfig extends Config {
 
     @Key("rerun.enable")
+    @DefaultValue("true")
     boolean enable();
 
     @Key("rerun.minSuccess")
-    int minSucces();
+    @DefaultValue("1")
+    int minSuccess();
 
     @Key("rerun.totalRepeats")
+    @DefaultValue("1")
     int totalRepeats();
 
-
-    //List<Exception>
+    @Key("rerun.exceptionPool")
+    @DefaultValue("Exception.class")
+    List<Exception> exceptionPool();
 }
