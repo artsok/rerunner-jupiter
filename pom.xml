@@ -34,8 +34,8 @@
         <url>https://github.com/artsok/rerunner-jupiter/issues</url>
     </issueManagement>
     <properties>
-        <junit.jupiter.version>5.0.0</junit.jupiter.version>
-        <junit.platform.version>1.0.0</junit.platform.version>
+        <junit.jupiter.version>5.0.3</junit.jupiter.version>
+        <junit.platform.version>1.0.3</junit.platform.version>
         <lombok.version>1.16.16</lombok.version>
         <mockito-core.version>2.10.0</mockito-core.version>
         <slf4j.version>1.7.5</slf4j.version>
@@ -80,6 +80,11 @@
             <artifactId>mockito-core</artifactId>
             <version>${mockito-core.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aeonbits.owner</groupId>
+            <artifactId>owner</artifactId>
+            <version>1.0.8</version>
         </dependency>
     </dependencies>
 
