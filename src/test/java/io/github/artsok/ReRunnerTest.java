@@ -30,7 +30,7 @@ class ReRunnerTest {
      * Repeated three times if test failed.
      * By default Exception.class will be handled in test
      */
-    @Disabled
+
     @RepeatedIfExceptionsTest(repeats = 3)
     void reRunTest() throws IOException {
         throw new IOException("Error in Test");
@@ -58,7 +58,7 @@ class ReRunnerTest {
         throw new IOException("Exception in I/O operation");
     }
 
-    @Disabled
+
     @DisplayName("Name for our test")
     @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
             name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
