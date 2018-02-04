@@ -7,7 +7,17 @@ import org.aeonbits.owner.Config;
  *
  * @author Artem Sokovets
  */
-public class ReRunConfig implements Config {
+public interface ReRunConfig implements Config {
+
+    @Key("rerun.enable")
+    boolean enable();
+
+    @Key("rerun.minSuccess")
+    int minSucces();
+
+    @Key("rerun.totalRepeats")
+    int totalRepeats();
 
 
+    //List<Exception>
 }
