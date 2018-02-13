@@ -1,6 +1,7 @@
 package io.github.artsok.properties;
 
 import org.aeonbits.owner.Config;
+import org.aeonbits.owner.Config.Sources;
 
 import java.util.List;
 
@@ -9,10 +10,11 @@ import java.util.List;
  *
  * @author Artem Sokovets
  */
+@Sources({"file:${user.dir}/rerun.properties" })
 public interface ReRunConfig extends Config {
 
-    @Key("rerun.enable")
     @DefaultValue("true")
+    @Key("rerun.enable")
     boolean enable();
 
     @Key("rerun.minSuccess")
@@ -25,5 +27,7 @@ public interface ReRunConfig extends Config {
 
     @Key("rerun.exceptionPool")
     @DefaultValue("Exception.class")
-    List<Exception> exceptionPool();
+    @ConverterClass(StringConverter.class)
+    List<String> exceptionPool();
 }
+

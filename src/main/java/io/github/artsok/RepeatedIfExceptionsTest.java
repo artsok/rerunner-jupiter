@@ -17,6 +17,8 @@
 package io.github.artsok;
 
 import io.github.artsok.extension.RepeatIfExceptionsCondition;
+import io.github.artsok.properties.ReRunConfig;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +41,8 @@ import java.lang.annotation.Target;
 @TestTemplate
 @ExtendWith(RepeatIfExceptionsCondition.class)
 public @interface RepeatedIfExceptionsTest {
+
+    ReRunConfig reRunConfig = ConfigFactory.create(ReRunConfig.class);
 
     /**
      * Placeholder for the {@linkplain TestInfo#getDisplayName display name} of
@@ -85,7 +89,7 @@ public @interface RepeatedIfExceptionsTest {
      * Number of repeats
      * @return N-times repeat test if it failed
      */
-    int repeats();
+    int repeats() default 1;
 
     /**
      * Minimum success
