@@ -25,12 +25,15 @@ class ExtendsWithTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
+
+    @Disabled
     @RepeatedIfExceptionsTest //repeats = 1, //minSuccess = 1 //
     void runTest() throws IOException {
         assertTrue(true, () -> "No exception, repeat one time");
         throw new IOException("Error in Test");
     }
 
+    @Disabled
     @Test
     void test() {
         System.out.println("1");
@@ -82,9 +85,9 @@ class ExtendsWithTest {
      * Repeated 100 times with minimum success four times, then disabled all remaining repeats.
      * See image below how it works. Default exception is Exception.class
      */
-    @Disabled
+    //@Disabled
     @DisplayName("Test Case Name")
-    @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
+    @RepeatedIfExceptionsTest //(repeats = 100, minSuccess = 4)
     void reRunTest5() {
         if(random.nextInt() % 2 == 0) {
             throw new RuntimeException("Error in Test");
