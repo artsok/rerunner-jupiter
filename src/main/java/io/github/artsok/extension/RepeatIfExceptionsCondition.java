@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.Stream.of;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 
@@ -123,9 +124,15 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
-        List<String> exceptionPool = reRunConfig.exceptionPool();
 
-//        Class<? extends Exception>[] exceptionPool = extensionContext.getTestMethod()
+        System.out.println(reRunConfig.exceptionPool().size() + " dfsf sdf ");
+
+
+        Class<? extends Exception>[] exceptionPool = (Class<? extends Exception>[]) reRunConfig.exceptionPool().toArray();
+
+
+
+//        Class<? extends Exception>[] exceptionPool = extensionContext.getTestMethoexceptionPoold()
 //                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
 //                .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
 //                .exceptions();
@@ -137,13 +144,13 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .orElse(new RepeatedIfException("There is no testExecutionException in context")).getClass();
 
 
-        boolean result = exceptionPool.contains(testExecutionException.getSimpleName());
+        //boolean result = exceptionPool.contains(testExecutionException.getSimpleName());
 
         log.debug("Exception in test '{}'", testExecutionException);
-        log.info("Result of check is actual exception contains in exceptionPool -  " + result);
+        //log.info("Result of check is actual exception contains in exceptionPool -  " + result);
 
-//        boolean result = of(exceptionPool)
-//                .anyMatch(ex -> ex.isAssignableFrom(testExecutionException) && !RepeatedIfException.class.isAssignableFrom(testExecutionException));
+        boolean result = of(exceptionPool)
+                .anyMatch(ex -> ex.isAssignableFrom(testExecutionException) && !RepeatedIfException.class.isAssignableFrom(testExecutionException));
         historyExceptionAppear.add(result);
         exceptionAppear = exceptionAppear || result;
     }

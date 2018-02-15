@@ -28,6 +28,6 @@ public interface ReRunConfig extends Config {
     @Key("rerun.exceptionClasses")
     @DefaultValue("java.lang.Exception")
     @ConverterClass(ExceptionConverter.class)
-    List<String> exceptionPool();
+    List<Class<? extends Exception>> exceptionPool();
 }
 

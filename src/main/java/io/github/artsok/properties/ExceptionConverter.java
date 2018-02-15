@@ -18,8 +18,8 @@ public class ExceptionConverter implements Converter<Class<?>> {
             log.error("Exception to load 'rerun.exceptionClasses' from rerun.properties", exception);
             throw new RuntimeException(exception);
         }
-        log.info(" <FKF  " + exceptionClass.getTypeName());
-
+        //log.info(" <FKF  " + exceptionClass.getTypeName());
         return exceptionClass;
     }
+
 }

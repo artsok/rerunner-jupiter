@@ -28,4 +28,8 @@ public class RepeatedIfException extends RuntimeException {
     public RepeatedIfException(String message) {
         super(message);
     }
+
+    public RepeatedIfException(RuntimeException exception) {
+        super(exception);
+    }
 }
