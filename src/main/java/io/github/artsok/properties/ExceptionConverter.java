@@ -6,14 +6,18 @@ import org.aeonbits.owner.Converter;
 import java.lang.reflect.Method;
 
 @Slf4j
-public class ExceptionConverter implements Converter<Class<?>> {
+public class ExceptionConverter implements Converter<Class> {
 
     @Override
-    public Class<?> convert(Method method, String text) {
+    public Class convert(Method method, String text) {
+        System.out.println(method);
+
         log.info("What we read from text " + text);
-        Class<?> exceptionClass = null;
+        Class<? extends Exception> exceptionClass = null;
         try {
-            exceptionClass = Class.forName(text);
+            exceptionClass = (Class<? extends Exception>) Class.forName(text);
+            log.info("Загрузили класс  {}", exceptionClass);
+
         } catch (ClassNotFoundException exception) {
             log.error("Exception to load 'rerun.exceptionClasses' from rerun.properties", exception);
             throw new RuntimeException(exception);
