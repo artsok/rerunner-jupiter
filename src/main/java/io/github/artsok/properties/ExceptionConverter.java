@@ -32,8 +32,9 @@ public class ExceptionConverter implements Converter<Class> {
             log.warn("Start to loading java.lang.Exception.class by default");
             try {
                 exceptionClass = (Class<? extends Exception>) Class.forName("java.lang.Exception");
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(exception);
+            } catch (ClassNotFoundException innerException) {
+                log.error("Exception occured, {}", innerException);
+                throw new RuntimeException(innerException);
             }
         }
         return exceptionClass;

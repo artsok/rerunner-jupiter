@@ -125,13 +125,14 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
 
-        System.out.println(reRunConfig);
-
-        Class<? extends Exception>[] exceptionPool = new Class[2];
+        Class<? extends Exception>[] exceptionPool =
+                reRunConfig.exceptionPool().toArray(new Class[reRunConfig.exceptionPool().size()]);
 
         for (int i = 0; i < reRunConfig.exceptionPool().size(); i++) {
+            log.debug("Log Exception - '{}'", reRunConfig.exceptionPool().get(i));
             exceptionPool[i]  = reRunConfig.exceptionPool().get(i);
         }
+
 
 
 
