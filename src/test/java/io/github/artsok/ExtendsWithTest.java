@@ -27,6 +27,7 @@ class ExtendsWithTest {
 
 
 
+    @DisplayName("Helloo")
     @RepeatedIfExceptionsTest
     void shouldBeRunOneTimeWithoutException()  {
         //Examples - run.minSuccess = 4 and rerun.totalRepeats = 102
