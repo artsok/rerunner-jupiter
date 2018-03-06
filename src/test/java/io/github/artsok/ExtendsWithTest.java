@@ -33,10 +33,9 @@ class ExtendsWithTest {
         //throw new IOException("Error in Test");
     }
 
-    //@Disabled
     @Test
-    void test() {
-        System.out.println("1");
+    void shouldBeTrue() {
+        assertTrue(true, "Usual Test");
     }
 
     /**

@@ -21,6 +21,7 @@ import io.github.artsok.RepeatedIfExceptionsTest;
 import io.github.artsok.properties.ReRunConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.aeonbits.owner.ConfigFactory;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -74,8 +75,11 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
+        log.debug("Provide TestTemplate invocation contexts");
         int minSuccess;
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
+
+
         RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
@@ -119,7 +123,9 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
         Class<? extends Exception>[] exceptionPool;
-
+        if(AnnotationUtils.isAnnotated(extensionContext.getTestMethod(), Test.class)) {
+            return;
+        }
         if (AnnotationUtils.isAnnotated(extensionContext.getTestMethod(), RepeatedIfExceptionsTest.class)) {
             exceptionPool = extensionContext.getTestMethod()
                     .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
