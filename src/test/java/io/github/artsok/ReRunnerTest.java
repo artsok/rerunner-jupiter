@@ -21,6 +21,7 @@ class ReRunnerTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
+    @Disabled
     @RepeatedIfExceptionsTest(repeats = 2)
     void runTest() {
         assertTrue(true, () -> "No exception, repeat one time");
@@ -30,7 +31,7 @@ class ReRunnerTest {
      * Repeated three times if test failed.
      * By default Exception.class will be handled in test
      */
-
+    @Disabled
     @RepeatedIfExceptionsTest(repeats = 3)
     void reRunTest() throws IOException {
         throw new IOException("Error in Test");
@@ -59,6 +60,7 @@ class ReRunnerTest {
     }
 
 
+    @Disabled
     @DisplayName("Name for our test")
     @RepeatedIfExceptionsTest(repeats = 2, exceptions = RuntimeException.class,
             name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
@@ -81,7 +83,7 @@ class ReRunnerTest {
         }
     }
 
-
+    @Disabled
     @DisplayName("Test Case Name111")
     @RepeatedIfExceptionsTest(repeats = 2, minSuccess = 1)
     void reRunTest6() {

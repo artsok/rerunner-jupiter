@@ -79,12 +79,10 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         int minSuccess;
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
 
-
         RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
                         + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
-
 
         if (annotationParams.repeats() > 1) {
             totalRepeats = annotationParams.repeats();
@@ -102,7 +100,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
         extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(MINIMUM_SUCCESS_KEY, minSuccess);
-        log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
+        log.debug("Total repeats '{}' and minSuccess '{}'", totalRepeats, minSuccess);
 
         String displayName = extensionContext.getDisplayName();
         formatter = displayNameFormatter(annotationParams, displayName);

@@ -26,15 +26,16 @@ class ExtendsWithTest {
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
 
-    //@Disabled
-    @RepeatedIfExceptionsTest //repeats = 1, //minSuccess = 1 //
-    void runTest() throws IOException {
-        assertTrue(true, () -> "No exception, repeat one time");
-        //throw new IOException("Error in Test");
+
+    @RepeatedIfExceptionsTest
+    void shouldBeRunOneTimeWithoutException()  {
+        //Examples - run.minSuccess = 4 and rerun.totalRepeats = 102
+        assertTrue(true,
+                "No exception, repeat one time. MinSuccess and Repeats read from rerun.properties");
     }
 
     @Test
-    void shouldBeTrue() {
+    void shouldBeRunOneTimeAsUsualTest() {
         assertTrue(true, "Usual Test");
     }
 

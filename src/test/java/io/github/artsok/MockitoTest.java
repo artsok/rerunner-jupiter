@@ -2,6 +2,8 @@ package io.github.artsok;
 
 import io.github.artsok.extension.RepeatedIfException;
 import io.github.artsok.extension.RepeatedIfExceptionsInvocationContext;
+import io.qameta.allure.Description;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 class MockitoTest {
 
+    @Description
     @Test
     void testRepeatedIfException() {
         Throwable exception = assertThrows(RepeatedIfException.class, () -> {
@@ -18,6 +21,7 @@ class MockitoTest {
         assertEquals("RepeatedIfException", exception.getMessage());
     }
 
+    @Disabled
     @Test
     void testRepeatedIfExceptionsInvocationContext() {
         RepeatedIfExceptionsInvocationContext repeatedIfExceptionsInvocationContext
