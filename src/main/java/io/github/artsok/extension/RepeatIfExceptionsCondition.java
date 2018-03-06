@@ -21,7 +21,6 @@ import io.github.artsok.RepeatedIfExceptionsTest;
 import io.github.artsok.properties.ReRunConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -77,10 +76,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
         int minSuccess;
-        System.out.println("aaaaaaaaaaaaaaaaa");
-
-        System.out.println("asd " + AnnotationUtils.isAnnotated(extensionContext.getTestMethod(), Test.class));
-
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
         RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
@@ -88,17 +83,17 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                         + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
 
 
-        if(annotationParams.repeats() > 1) {
+        if (annotationParams.repeats() > 1) {
             totalRepeats = annotationParams.repeats();
         } else {
             totalRepeats = reRunConfig.totalRepeats();
         }
 
 
-        if(annotationParams.minSuccess() > 1) {
+        if (annotationParams.minSuccess() > 1) {
             minSuccess = annotationParams.minSuccess();
         } else {
-          minSuccess = reRunConfig.minSuccess();
+            minSuccess = reRunConfig.minSuccess();
         }
 
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
@@ -124,34 +119,25 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
+        Class<? extends Exception>[] exceptionPool;
 
-        Class<? extends Exception>[] exceptionPool =
-                reRunConfig.exceptionPool().toArray(new Class[reRunConfig.exceptionPool().size()]);
-
-        for (int i = 0; i < reRunConfig.exceptionPool().size(); i++) {
-            log.debug("Log Exception - '{}'", reRunConfig.exceptionPool().get(i));
-            exceptionPool[i]  = reRunConfig.exceptionPool().get(i);
+        if (AnnotationUtils.isAnnotated(extensionContext.getTestMethod(), RepeatedIfExceptionsTest.class)) {
+            exceptionPool = extensionContext.getTestMethod()
+                    .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
+                    .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
+                    .exceptions();
+        } else {
+            exceptionPool =
+                    reRunConfig.exceptionPool().toArray(new Class[reRunConfig.exceptionPool().size()]);
+            for (int i = 0; i < reRunConfig.exceptionPool().size(); i++) {
+                exceptionPool[i] = reRunConfig.exceptionPool().get(i);
+            }
         }
-
-
-
-
-//        Class<? extends Exception>[] exceptionPool = extensionContext.getTestMethoexceptionPoold()
-//                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
-//                .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
-//                .exceptions();
-
-
-        log.info("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
+        log.debug("Exceptions Pool are '{}'", exceptionPool);
 
         Class<? extends Throwable> testExecutionException = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no testExecutionException in context")).getClass();
-
-
-        //boolean result = exceptionPool.contains(testExecutionException.getSimpleName());
-
-        log.debug("Exception in test '{}'", testExecutionException);
-        //log.info("Result of check is actual exception contains in exceptionPool -  " + result);
+        log.debug("Exceptions in test '{}'", testExecutionException);
 
         boolean result = of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(testExecutionException) && !RepeatedIfException.class.isAssignableFrom(testExecutionException));
