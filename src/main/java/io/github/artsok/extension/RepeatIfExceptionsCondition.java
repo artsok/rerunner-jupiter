@@ -62,7 +62,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public boolean supportsTestTemplate(ExtensionContext extensionContext) {
-        System.out.println("sadsda " + reRunConfig.enable());
         return true;
     }
 
