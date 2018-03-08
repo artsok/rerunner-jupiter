@@ -16,6 +16,7 @@
  */
 package io.github.artsok.extension;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import static java.util.Collections.singletonList;
  *
  * @author Artem Sokovets
  */
+@Slf4j
 public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvocationContext {
 
     private final int currentRepetition;
@@ -49,6 +51,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 
     @Override
     public List<Extension> getAdditionalExtensions() {
+        log.debug("Getting additional extensions");
         return singletonList(new RepeatExecutionCondition());
     }
 
@@ -59,9 +62,11 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
  * Implements ExecutionCondition interface.
  * With one method in this interface, we can control of on/off executing test
  */
+@Slf4j
 class RepeatExecutionCondition implements ExecutionCondition {
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+        log.debug("Executing evaluateExecutionCondition");
         int minSuccess = (int) context.getStore(ExtensionContext.Namespace.GLOBAL).get(MINIMUM_SUCCESS_KEY);
         if(historyExceptionAppear.size() >= minSuccess
                 && historyExceptionAppear.stream().skip(historyExceptionAppear.size() - (long) minSuccess).noneMatch(b -> b)) {

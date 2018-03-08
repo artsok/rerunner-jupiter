@@ -1,6 +1,7 @@
 package io.github.artsok;
 
 
+import io.github.artsok.conditions.TestRepeatedCondition;
 import io.github.artsok.extension.ReRunCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @Slf4j
 @ExtendWith(ReRunCondition.class)
-class ExtendsWithTest {
+public class ExtendsWithTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
@@ -36,6 +37,7 @@ class ExtendsWithTest {
                 "No exception, repeat one time. MinSuccess and Repeats read from rerun.properties");
     }
 
+    @Disabled
     @Test
     void shouldBeRunOneTimeAsUsualTest() {
         assertTrue(true, "Usual Test");
@@ -46,9 +48,13 @@ class ExtendsWithTest {
      * Add ReRunCondition and your Test Class. If any test method with annotation @Test and @RepeatedIfExceptionsTest will be failing,
      * this condition rerun it n-times that you set at rerun.properties or at annotation parameters.
      */
+
     @Test
+    @ExtendWith(TestRepeatedCondition.class)
     void shouldBeReRunUsualTest() throws IOException {
+        System.out.println("Выполняем тест");
         throw new IOException("IO Exception");
+        //assertTrue(true);
     }
 
     /**

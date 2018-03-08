@@ -75,6 +75,8 @@ public class ReRunCondition implements TestTemplateInvocationContextProvider, Af
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
+
+        System.out.println("sdfsdfsdfsdfdsf");
         log.debug("Provide TestTemplate invocation contexts");
         int minSuccess;
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");

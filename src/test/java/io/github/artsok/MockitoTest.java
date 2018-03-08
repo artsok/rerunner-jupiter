@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 class MockitoTest {
 
+    @Disabled
     @Description
     @Test
     void testRepeatedIfException() {
