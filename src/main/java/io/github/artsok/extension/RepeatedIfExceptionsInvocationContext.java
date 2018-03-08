@@ -20,8 +20,8 @@ import org.junit.jupiter.api.extension.*;
 
 import java.util.List;
 
-import static io.github.artsok.extension.RepeatIfExceptionsCondition.MINIMUM_SUCCESS_KEY;
-import static io.github.artsok.extension.RepeatIfExceptionsCondition.historyExceptionAppear;
+import static io.github.artsok.extension.ReRunCondition.MINIMUM_SUCCESS_KEY;
+import static io.github.artsok.extension.ReRunCondition.historyExceptionAppear;
 import static java.util.Collections.singletonList;
 
 

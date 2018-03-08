@@ -16,7 +16,7 @@
  */
 package io.github.artsok;
 
-import io.github.artsok.extension.RepeatIfExceptionsCondition;
+import io.github.artsok.extension.ReRunCondition;
 import io.github.artsok.properties.ReRunConfig;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.TestInfo;
@@ -32,14 +32,14 @@ import java.lang.annotation.Target;
  * Annotation which you can put to test method
  * Customize number of repeats and set for what exception you want handler.
  * By default handler Exception.class
- * All logic of this extension at {@link RepeatIfExceptionsCondition}
+ * All logic of this extension at {@link ReRunCondition}
  *
  * @author Artem Sokovets
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @TestTemplate
-@ExtendWith(RepeatIfExceptionsCondition.class)
+@ExtendWith(ReRunCondition.class)
 public @interface RepeatedIfExceptionsTest {
 
     ReRunConfig reRunConfig = ConfigFactory.create(ReRunConfig.class);

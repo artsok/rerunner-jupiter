@@ -46,7 +46,7 @@ import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
  * @author Artem Sokovets
  */
 @Slf4j
-public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
+public class ReRunCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
 
     private boolean exceptionAppear = false;
     private int totalRepeats = 0;
