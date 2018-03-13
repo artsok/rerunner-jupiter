@@ -1,8 +1,8 @@
 package io.github.artsok;
 
 
-import io.github.artsok.conditions.TestRepeatedCondition;
 import io.github.artsok.extension.ReRunCondition;
+import io.github.artsok.extension.TestRepeatedConditionMain;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +50,7 @@ public class ExtendsWithTest {
      */
 
     @Test
-    @ExtendWith(TestRepeatedCondition.class)
+    @ExtendWith(TestRepeatedConditionMain.class)
     void shouldBeReRunUsualTest() throws IOException {
         System.out.println("Выполняем тест");
         throw new IOException("IO Exception");

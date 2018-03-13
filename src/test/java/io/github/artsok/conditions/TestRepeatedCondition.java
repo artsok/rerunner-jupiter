@@ -4,10 +4,9 @@ import io.github.artsok.ExtendsWithTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
-import org.junit.platform.launcher.Launcher;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junit.platform.launcher.TestExecutionListener;
-import org.junit.platform.launcher.TestPlan;
+import org.junit.jupiter.engine.descriptor.TestFactoryTestDescriptor;
+import org.junit.platform.engine.UniqueId;
+import org.junit.platform.launcher.*;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
@@ -33,8 +32,9 @@ public class TestRepeatedCondition implements TestExecutionExceptionHandler {
         }
         Optional<Throwable> executionException = context.getExecutionException();
         log.debug("Исключение, '{}'", throwable.getMessage());
-
         log.debug("Context '{}'", context.getTestMethod());
+        log.debug("Уникальный ID '{}'", context.getUniqueId());
+
 
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
                 .selectors(
@@ -48,6 +48,7 @@ public class TestRepeatedCondition implements TestExecutionExceptionHandler {
                         includeClassNamePatterns(".*Test")
                 ).configurationParameter("a" + LimitCore.count.get(), "" + LimitCore.count.get())
                 .build();
+
 
 
         Launcher launcher = LauncherFactory.create();
@@ -65,6 +66,14 @@ public class TestRepeatedCondition implements TestExecutionExceptionHandler {
 
         log.debug("Увеличиваем счетчик '{}'", LimitCore.count.getAndIncrement());
         TestExecutionListener listener = new SummaryGeneratingListener();
+
+
+        TestIdentifier testIdentifier = TestIdentifier.from(new TestFactoryTestDescriptor(
+                UniqueId.parse(context.getUniqueId()),
+                context.getTestClass().get(),
+                context.getTestMethod().get()));
+        listener.executionStarted(testIdentifier);
+
         launcher.registerTestExecutionListeners(listener);
         launcher.execute(request);
 
