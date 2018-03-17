@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Artem Sokovets
  */
 @Slf4j
-@ExtendWith(ReRunCondition.class)
+//@ExtendWith(ReRunCondition.class)
 public class ExtendsWithTest {
 
     private ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -52,8 +53,10 @@ public class ExtendsWithTest {
     @Test
     @ExtendWith(TestRepeatedConditionMain.class)
     void shouldBeReRunUsualTest() throws IOException {
-        System.out.println("Выполняем тест");
-        throw new IOException("IO Exception");
+        System.out.println(ExtendsWithTest.class.toString());
+        UUID uuid = UUID.randomUUID();
+        System.out.println("Выполняем тест " + uuid);
+       throw new IOException("IO Exception");
         //assertTrue(true);
     }
 

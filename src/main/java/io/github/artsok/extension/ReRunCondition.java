@@ -160,8 +160,9 @@ public class ReRunCondition implements TestTemplateInvocationContextProvider, Af
     private RepeatedIfExceptionsDisplayNameFormatter displayNameFormatter(RepeatedIfExceptionsTest test, String displayName) {
         String pattern = test.name().trim();
         if (StringUtils.isBlank(pattern)) {
-            pattern = AnnotationUtils.getDefaultValue(test, "name", String.class)
-                    .orElseThrow(() -> new RepeatedIfException("Exception occurred with name parameter of RepeatedIfExceptionsTest annotation"));
+//TODO: Метод getDefaultValue пропал из AnnotationUtils
+//            pattern = AnnotationUtils.getDefaultValue(test, "name", String.class)
+//                    .orElseThrow(() -> new RepeatedIfException("Exception occurred with name parameter of RepeatedIfExceptionsTest annotation"));
         }
         return new RepeatedIfExceptionsDisplayNameFormatter(pattern, displayName);
     }
