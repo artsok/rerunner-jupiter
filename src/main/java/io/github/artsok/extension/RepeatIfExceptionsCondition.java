@@ -20,8 +20,6 @@ package io.github.artsok.extension;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
