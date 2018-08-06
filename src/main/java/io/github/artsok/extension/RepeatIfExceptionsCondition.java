@@ -74,7 +74,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
-
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
 
         RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
@@ -88,6 +87,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
         extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(MINIMUM_SUCCESS_KEY, minSuccess);
+        log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
         String displayName = extensionContext.getDisplayName();
         formatter = displayNameFormatter(annotationParams, displayName);
@@ -111,9 +111,11 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions();
+        log.debug("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
 
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
+        log.debug("Exception in test '{}'", exception);
         boolean result = of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
         historyExceptionAppear.add(result);
@@ -135,6 +137,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         }
         return new RepeatedIfExceptionsDisplayNameFormatter(pattern, displayName);
     }
+
 
     /**
      * TestTemplateIterator (Repeat test if it failed)
