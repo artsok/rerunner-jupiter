@@ -20,6 +20,8 @@ package io.github.artsok.extension;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
@@ -49,7 +51,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private boolean exceptionAppear = false;
     private int totalRepeats = 0;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
-    static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+    static List<Boolean> historyExceptionAppear;
     static final String MINIMUM_SUCCESS_KEY = "MINIMUM_SUCCESS_KEY";
 
     /**
@@ -72,6 +74,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
+
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
 
         RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
@@ -81,10 +84,10 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         totalRepeats = annotationParams.repeats();
         int minSuccess = annotationParams.minSuccess();
+        historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
         extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(MINIMUM_SUCCESS_KEY, minSuccess);
-        log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
         String displayName = extensionContext.getDisplayName();
         formatter = displayNameFormatter(annotationParams, displayName);
@@ -104,15 +107,13 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
-        Class<? extends Exception>[] exceptionPool = extensionContext.getTestMethod()
+        Class<? extends Throwable>[] exceptionPool = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions();
-        log.debug("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
 
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
-        log.debug("Exception in test '{}'", exception);
         boolean result = of(exceptionPool)
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
         historyExceptionAppear.add(result);
@@ -134,7 +135,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         }
         return new RepeatedIfExceptionsDisplayNameFormatter(pattern, displayName);
     }
-
 
     /**
      * TestTemplateIterator (Repeat test if it failed)
