@@ -79,7 +79,7 @@ public @interface RepeatedIfExceptionsTest {
      * Pool of exceptions
      * @return Exception that handlered
      */
-    Class<? extends Exception>[] exceptions() default Exception.class;
+    Class<? extends Throwable>[] exceptions() default Throwable.class;
 
     /**
      * Number of repeats

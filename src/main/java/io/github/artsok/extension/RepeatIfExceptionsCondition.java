@@ -49,7 +49,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private boolean exceptionAppear = false;
     private int totalRepeats = 0;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
-    static List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+    static List<Boolean> historyExceptionAppear;
     static final String MINIMUM_SUCCESS_KEY = "MINIMUM_SUCCESS_KEY";
 
     /**
@@ -81,6 +81,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         totalRepeats = annotationParams.repeats();
         int minSuccess = annotationParams.minSuccess();
+        historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
         extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(MINIMUM_SUCCESS_KEY, minSuccess);
@@ -104,7 +105,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
-        Class<? extends Exception>[] exceptionPool = extensionContext.getTestMethod()
+        Class<? extends Throwable>[] exceptionPool = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions();
