@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.artsok</groupId>
     <artifactId>rerunner-jupiter</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     <name>Reunner-Jupiter</name>
     <description>
         JUnit 5 Extension point which rerun failed tests certain number of times

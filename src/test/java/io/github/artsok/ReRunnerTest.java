@@ -80,4 +80,25 @@ class ReRunnerTest {
             throw new RuntimeException("Error in Test");
         }
     }
+
+    //    @Disabled
+    @DisplayName("Do not ultimately fail a test if there are still enough repetitions possible.")
+    @RepeatedIfExceptionsTest(repeats = 2)
+    void reRunTest6() {
+        throw new RuntimeException("Error in Test");
+    }
+
+    //    @Disabled
+    @DisplayName("Stop repetitions if 'minSuccess' cannot be reached anymore")
+    @RepeatedIfExceptionsTest(repeats = 10, minSuccess = 4)
+    void reRunTest7() {
+        throw new RuntimeException("Error in Test");
+    }
+
+    //    @Disabled
+    @DisplayName("Do not ultimately fail a test if there are still enough repetitions possible.")
+    @RepeatedIfExceptionsTest(repeats = 10, exceptions = NumberFormatException.class)
+    void reRunTest8() {
+        throw new RuntimeException("Error in Test");
+    }
 }
