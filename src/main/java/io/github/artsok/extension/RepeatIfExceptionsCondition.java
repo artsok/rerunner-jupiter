@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Math.toIntExact;
@@ -57,7 +58,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
     private int totalRepeats = 0;
     private int minSuccess = 1;
-    private Class<? extends Throwable>[] repeatableExceptions;
+    private List<Class<? extends Throwable>> repeatableExceptions;
     private boolean repeatableExceptionAppeared = false;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
     private List<Boolean> historyExceptionAppear;
@@ -107,10 +108,12 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
-        repeatableExceptions = context.getTestMethod()
+        repeatableExceptions = Stream.of(context.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
-                .exceptions();
+                .exceptions()
+        ).collect(Collectors.toList());
+        repeatableExceptions.add(TestAbortedException.class);
     }
 
     /**
@@ -129,7 +132,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
         log.debug("Exception in test '{}'", exception);
-        return Stream.of(repeatableExceptions)
+        return repeatableExceptions.stream()
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
     }
 
@@ -166,7 +169,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     }
 
     private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
-        return Stream.of(repeatableExceptions).noneMatch(ex -> ex.isAssignableFrom(appearedException.getClass()));
+        return repeatableExceptions.stream().noneMatch(ex -> ex.isAssignableFrom(appearedException.getClass()));
     }
 
     private boolean isMinSuccessTargetStillReachable(long minSuccessCount) {
