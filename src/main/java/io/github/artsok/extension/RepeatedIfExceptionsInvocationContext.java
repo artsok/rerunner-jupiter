@@ -38,14 +38,17 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
     private final int totalRepetitions;
     private final int successfulTestRepetitionsCount;
     private final int minSuccess;
+    private final boolean repeatableExceptionAppeared;
     private final RepeatedIfExceptionsDisplayNameFormatter formatter;
 
     RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, int successfulTestRepetitionsCount,
-                                          int minSuccess, RepeatedIfExceptionsDisplayNameFormatter formatter) {
+                                          int minSuccess, boolean repeatableExceptionAppeared,
+                                          RepeatedIfExceptionsDisplayNameFormatter formatter) {
         this.currentRepetition = currentRepetition;
         this.totalRepetitions = totalRepetitions;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
         this.minSuccess = minSuccess;
+        this.repeatableExceptionAppeared = repeatableExceptionAppeared;
         this.formatter = formatter;
     }
 
@@ -57,7 +60,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
     @Override
     public List<Extension> getAdditionalExtensions() {
         return singletonList(new RepeatExecutionCondition(currentRepetition, totalRepetitions, minSuccess,
-                successfulTestRepetitionsCount));
+                successfulTestRepetitionsCount, repeatableExceptionAppeared));
     }
 }
 
@@ -71,22 +74,41 @@ class RepeatExecutionCondition implements ExecutionCondition {
     private final int minSuccess;
     private final int successfulTestRepetitionsCount;
     private final int failedTestRepetitionsCount;
+    private final boolean repeatableExceptionAppeared;
 
-    RepeatExecutionCondition(int currentRepetition, int totalRepetitions, int minSuccess, int successfulTestRepetitionsCount) {
+    RepeatExecutionCondition(int currentRepetition, int totalRepetitions, int minSuccess,
+                             int successfulTestRepetitionsCount, boolean repeatableExceptionAppeared) {
         this.totalRepetitions = totalRepetitions;
         this.minSuccess = minSuccess;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
         this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount - 1;
+        this.repeatableExceptionAppeared = repeatableExceptionAppeared;
     }
 
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if (successfulTestRepetitionsCount >= minSuccess) {
-            return ConditionEvaluationResult.disabled("Turn off the remaining repetitions as the test ultimately passed");
-        } else if (totalRepetitions - failedTestRepetitionsCount < minSuccess) {
+        if (testUltimatelyFailed()) {
             return ConditionEvaluationResult.disabled("Turn off the remaining repetitions as the test ultimately failed");
+        } else if (testUltimatelyPassed()) {
+            return ConditionEvaluationResult.disabled("Turn off the remaining repetitions as the test ultimately passed");
         } else {
             return ConditionEvaluationResult.enabled("Repeat the tests");
         }
+    }
+
+    private boolean testUltimatelyFailed() {
+        return aNonRepeatableExceptionAppeared() || minimalRequiredSuccessfulRunsCannotBeReachedAnymore();
+    }
+
+    private boolean aNonRepeatableExceptionAppeared() {
+        return failedTestRepetitionsCount > 0 && !repeatableExceptionAppeared;
+    }
+
+    private boolean minimalRequiredSuccessfulRunsCannotBeReachedAnymore() {
+        return totalRepetitions - failedTestRepetitionsCount < minSuccess;
+    }
+
+    private boolean testUltimatelyPassed() {
+        return successfulTestRepetitionsCount >= minSuccess;
     }
 }

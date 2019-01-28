@@ -23,7 +23,7 @@ class ReRunnerTest {
 
     @RepeatedIfExceptionsTest(repeats = 2)
     void runTest() {
-        assertTrue(true, () -> "No exception, repeat one time");
+        assertTrue(true, "No exception, repeat one time");
     }
 
     /**
@@ -96,8 +96,8 @@ class ReRunnerTest {
     }
 
     //    @Disabled
-    @DisplayName("Do not ultimately fail a test if there are still enough repetitions possible.")
-    @RepeatedIfExceptionsTest(repeats = 10, exceptions = NumberFormatException.class)
+    @DisplayName("Ultimately fail a test as soon as an unrepeatable exception occurs.")
+    @RepeatedIfExceptionsTest(repeats = 2, exceptions = NumberFormatException.class)
     void reRunTest8() {
         throw new RuntimeException("Error in Test");
     }
