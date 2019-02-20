@@ -20,18 +20,27 @@ package io.github.artsok.extension;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
+import org.opentest4j.TestAbortedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Math.toIntExact;
 import static java.util.Spliterators.spliteratorUnknownSize;
-import static java.util.stream.Stream.of;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
@@ -44,13 +53,15 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
  * @author Artem Sokovets
  */
 @Slf4j
-public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, AfterTestExecutionCallback {
+public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback,
+        AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
-    private boolean exceptionAppear = false;
     private int totalRepeats = 0;
+    private int minSuccess = 1;
+    private List<Class<? extends Throwable>> repeatableExceptions;
+    private boolean repeatableExceptionAppeared = false;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
-    static List<Boolean> historyExceptionAppear;
-    static final String MINIMUM_SUCCESS_KEY = "MINIMUM_SUCCESS_KEY";
+    private List<Boolean> historyExceptionAppear;
 
     /**
      * Check that test method contain {@link RepeatedIfExceptionsTest} annotation
@@ -80,11 +91,10 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                         + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
 
         totalRepeats = annotationParams.repeats();
-        int minSuccess = annotationParams.minSuccess();
+        minSuccess = annotationParams.minSuccess();
         historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
-        extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(MINIMUM_SUCCESS_KEY, minSuccess);
         log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
         String displayName = extensionContext.getDisplayName();
@@ -96,6 +106,15 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         return stream(spliterator, false);
     }
 
+    @Override
+    public void beforeTestExecution(ExtensionContext context) throws Exception {
+        repeatableExceptions = Stream.of(context.getTestMethod()
+                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
+                .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
+                .exceptions()
+        ).collect(Collectors.toList());
+        repeatableExceptions.add(TestAbortedException.class);
+    }
 
     /**
      * Check if exceptions that will appear in test same as we wait
@@ -105,19 +124,16 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      */
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
-        Class<? extends Throwable>[] exceptionPool = extensionContext.getTestMethod()
-                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
-                .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
-                .exceptions();
-        log.debug("Exceptions Pool in RepeatedIfExceptionsTest '{}'", exceptionPool);
+        boolean exceptionAppeared = exceptionAppeared(extensionContext);
+        historyExceptionAppear.add(exceptionAppeared);
+    }
 
+    private boolean exceptionAppeared(ExtensionContext extensionContext) {
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
         log.debug("Exception in test '{}'", exception);
-        boolean result = of(exceptionPool)
+        return repeatableExceptions.stream()
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
-        historyExceptionAppear.add(result);
-        exceptionAppear = exceptionAppear || result;
     }
 
     /**
@@ -136,6 +152,29 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         return new RepeatedIfExceptionsDisplayNameFormatter(pattern, displayName);
     }
 
+    @Override
+    public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+        if (appearedExceptionDoesNotAllowRepetitions(throwable)) {
+            throw throwable;
+        }
+        repeatableExceptionAppeared = true;
+        long currentSuccessCount = historyExceptionAppear.stream().filter(exceptionAppeared -> !exceptionAppeared).count();
+        if (currentSuccessCount < minSuccess) {
+            if (isMinSuccessTargetStillReachable(minSuccess)) {
+                throw new TestAbortedException("Do not fail completely but repeat the test", throwable);
+            } else {
+                throw throwable;
+            }
+        }
+    }
+
+    private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
+        return repeatableExceptions.stream().noneMatch(ex -> ex.isAssignableFrom(appearedException.getClass()));
+    }
+
+    private boolean isMinSuccessTargetStillReachable(long minSuccessCount) {
+        return historyExceptionAppear.stream().filter(bool -> bool).count() < totalRepeats - minSuccessCount;
+    }
 
     /**
      * TestTemplateIterator (Repeat test if it failed)
@@ -148,14 +187,16 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
             if (currentIndex == 0) {
                 return true;
             }
-            return exceptionAppear && currentIndex < totalRepeats ? true : false;
+            return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
         }
 
         @Override
         public TestTemplateInvocationContext next() {
+            int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
             if (hasNext()) {
                 currentIndex++;
-                return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats, formatter);
+                return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats,
+                        successfulTestRepetitionsCount, minSuccess, repeatableExceptionAppeared, formatter);
             }
             throw new NoSuchElementException();
         }

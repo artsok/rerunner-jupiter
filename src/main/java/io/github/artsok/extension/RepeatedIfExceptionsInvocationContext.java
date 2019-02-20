@@ -16,12 +16,14 @@
  */
 package io.github.artsok.extension;
 
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
 import java.util.List;
 
-import static io.github.artsok.extension.RepeatIfExceptionsCondition.MINIMUM_SUCCESS_KEY;
-import static io.github.artsok.extension.RepeatIfExceptionsCondition.historyExceptionAppear;
 import static java.util.Collections.singletonList;
 
 
@@ -34,11 +36,19 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 
     private final int currentRepetition;
     private final int totalRepetitions;
+    private final int successfulTestRepetitionsCount;
+    private final int minSuccess;
+    private final boolean repeatableExceptionAppeared;
     private final RepeatedIfExceptionsDisplayNameFormatter formatter;
 
-    RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, RepeatedIfExceptionsDisplayNameFormatter formatter) {
+    RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, int successfulTestRepetitionsCount,
+                                          int minSuccess, boolean repeatableExceptionAppeared,
+                                          RepeatedIfExceptionsDisplayNameFormatter formatter) {
         this.currentRepetition = currentRepetition;
         this.totalRepetitions = totalRepetitions;
+        this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
+        this.minSuccess = minSuccess;
+        this.repeatableExceptionAppeared = repeatableExceptionAppeared;
         this.formatter = formatter;
     }
 
@@ -49,9 +59,9 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return singletonList(new RepeatExecutionCondition());
+        return singletonList(new RepeatExecutionCondition(currentRepetition, totalRepetitions, minSuccess,
+                successfulTestRepetitionsCount, repeatableExceptionAppeared));
     }
-
 }
 
 
@@ -60,13 +70,45 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
  * With one method in this interface, we can control of on/off executing test
  */
 class RepeatExecutionCondition implements ExecutionCondition {
+    private final int totalRepetitions;
+    private final int minSuccess;
+    private final int successfulTestRepetitionsCount;
+    private final int failedTestRepetitionsCount;
+    private final boolean repeatableExceptionAppeared;
+
+    RepeatExecutionCondition(int currentRepetition, int totalRepetitions, int minSuccess,
+                             int successfulTestRepetitionsCount, boolean repeatableExceptionAppeared) {
+        this.totalRepetitions = totalRepetitions;
+        this.minSuccess = minSuccess;
+        this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
+        this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount - 1;
+        this.repeatableExceptionAppeared = repeatableExceptionAppeared;
+    }
+
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        int minSuccess = (int) context.getStore(ExtensionContext.Namespace.GLOBAL).get(MINIMUM_SUCCESS_KEY);
-        if(historyExceptionAppear.size() >= minSuccess
-                && historyExceptionAppear.stream().skip(historyExceptionAppear.size() - (long) minSuccess).noneMatch(b -> b)) {
-                return ConditionEvaluationResult.disabled("Turn off the remaining tests that must be performed");
+        if (testUltimatelyFailed()) {
+            return ConditionEvaluationResult.disabled("Turn off the remaining repetitions as the test ultimately failed");
+        } else if (testUltimatelyPassed()) {
+            return ConditionEvaluationResult.disabled("Turn off the remaining repetitions as the test ultimately passed");
+        } else {
+            return ConditionEvaluationResult.enabled("Repeat the tests");
         }
-        return ConditionEvaluationResult.enabled("");
+    }
+
+    private boolean testUltimatelyFailed() {
+        return aNonRepeatableExceptionAppeared() || minimalRequiredSuccessfulRunsCannotBeReachedAnymore();
+    }
+
+    private boolean aNonRepeatableExceptionAppeared() {
+        return failedTestRepetitionsCount > 0 && !repeatableExceptionAppeared;
+    }
+
+    private boolean minimalRequiredSuccessfulRunsCannotBeReachedAnymore() {
+        return totalRepetitions - failedTestRepetitionsCount < minSuccess;
+    }
+
+    private boolean testUltimatelyPassed() {
+        return successfulTestRepetitionsCount >= minSuccess;
     }
 }
