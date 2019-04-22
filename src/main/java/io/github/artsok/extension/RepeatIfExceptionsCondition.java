@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
 import org.opentest4j.TestAbortedException;
@@ -34,6 +33,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -95,6 +95,9 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
 
         String displayName = extensionContext.getDisplayName();
+
+
+
         formatter = displayNameFormatter(annotationParams, displayName);
 
         //Convert logic of repeated handler to spliterator
@@ -142,7 +145,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private RepeatedIfExceptionsDisplayNameFormatter displayNameFormatter(RepeatedIfExceptionsTest test, String displayName) {
         String pattern = test.name().trim();
         if (StringUtils.isBlank(pattern)) {
-            pattern = AnnotationUtils.getDefaultValue(test, "name", String.class)
+            pattern = Optional.of(test.name())
                     .orElseThrow(() -> new RepeatedIfException("Exception occurred with name parameter of RepeatedIfExceptionsTest annotation"));
         }
         return new RepeatedIfExceptionsDisplayNameFormatter(pattern, displayName);
