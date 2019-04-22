@@ -18,7 +18,6 @@ package io.github.artsok.extension;
 
 
 import io.github.artsok.RepeatedIfExceptionsTest;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -52,7 +51,6 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
  *
  * @author Artem Sokovets
  */
-@Slf4j
 public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback,
         AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
@@ -95,7 +93,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
-        log.debug("Total repeats '{}' and minSuccess", totalRepeats, minSuccess);
 
         String displayName = extensionContext.getDisplayName();
         formatter = displayNameFormatter(annotationParams, displayName);
@@ -131,7 +128,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private boolean exceptionAppeared(ExtensionContext extensionContext) {
         Class<? extends Throwable> exception = extensionContext.getExecutionException()
                 .orElse(new RepeatedIfException("There is no exception in context")).getClass();
-        log.debug("Exception in test '{}'", exception);
         return repeatableExceptions.stream()
                 .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
     }

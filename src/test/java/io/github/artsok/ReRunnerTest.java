@@ -1,7 +1,6 @@
 package io.github.artsok;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,6 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMetho
  *
  * @author Artem Sokovets
  */
-@Slf4j
 public class ReRunnerTest {
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
