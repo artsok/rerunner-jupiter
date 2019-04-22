@@ -80,7 +80,8 @@ More examples you can find in [here].
 
 
 ## GitHub Star
-Push to the star if you like this JUnit 5 Extension. By this way, I will get feedback from you!
+Push to the [star] if you like this JUnit 5 Extension. By this way, I will get feedback from you!
 
 
 [here]: https://github.com/artsok/rerunner-jupiter/blob/master/src/test/java/io/github/artsok/ReRunnerTest.java
+[star]: https://github.com/artsok/rerunner-jupiter/stargazers
