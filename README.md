@@ -80,4 +80,4 @@ More examples you can find in /src/test/.
 
 
 ## GitHub Star
-Push to the star if you like this JUnit 5 Extension. By this way, I get feedback from you!
+Push to the star if you like this JUnit 5 Extension. By this way, I will get feedback from you!
