@@ -76,7 +76,7 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            }
            
 ```
-More examples you can find in [here].
+More examples you can find [here].
 
 
 ## GitHub Star
