@@ -16,7 +16,8 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
 <dependency>
     <groupId>io.github.artsok</groupId>
     <artifactId>rerunner-jupiter</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
+    <scope>test</scope>
 </dependency>
 ```
 
@@ -75,3 +76,8 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            }
            
 ```
+More examples you can find in /src/test/.
+
+
+## GitHub Star
+Push to the star if you like this JUnit 5 Extension. By this way, I get feedback from you!
