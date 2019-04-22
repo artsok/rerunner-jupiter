@@ -76,8 +76,11 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            }
            
 ```
-More examples you can find in /src/test/.
+More examples you can find in here.
 
 
 ## GitHub Star
 Push to the star if you like this JUnit 5 Extension. By this way, I will get feedback from you!
+
+
+[here]: https://github.com/artsok/rerunner-jupiter/blob/master/src/test/java/io/github/artsok/ReRunnerTest.java
