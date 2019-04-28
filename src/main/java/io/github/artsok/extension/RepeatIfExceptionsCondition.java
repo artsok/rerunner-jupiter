@@ -17,6 +17,7 @@
 package io.github.artsok.extension;
 
 
+import io.github.artsok.ParameterizedRepeatedIfExceptionsTest;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -67,7 +68,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      * @param extensionContext - encapsulates the context in which the current test or container is being executed
      * @return true/false
      */
-    @Override
+    //@Override
     public boolean supportsTestTemplate(ExtensionContext extensionContext) {
         return isAnnotated(extensionContext.getTestMethod(), RepeatedIfExceptionsTest.class);
     }
@@ -96,8 +97,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         String displayName = extensionContext.getDisplayName();
 
-
-
         formatter = displayNameFormatter(annotationParams, displayName);
 
         //Convert logic of repeated handler to spliterator
@@ -109,7 +108,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         repeatableExceptions = Stream.of(context.getTestMethod()
-                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
+                .flatMap(testMethods -> findAnnotation(testMethods, ParameterizedRepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
                 .exceptions()
         ).collect(Collectors.toList());
