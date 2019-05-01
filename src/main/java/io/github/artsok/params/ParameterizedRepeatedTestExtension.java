@@ -1,9 +1,9 @@
 package io.github.artsok.params;
 
 import io.github.artsok.ParameterizedRepeatedIfExceptionsTest;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import io.github.artsok.extension.RepeatedIfException;
+import io.github.artsok.extension.RepeatedIfExceptionsInvocationContext;
+import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -12,15 +12,28 @@ import org.junit.platform.commons.JUnitException;
 import org.junit.platform.commons.util.ExceptionUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.opentest4j.TestAbortedException;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Math.toIntExact;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.*;
 
-public class ParameterizedRepeatedTestExtension implements TestTemplateInvocationContextProvider {
+public class ParameterizedRepeatedTestExtension implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback, AfterTestExecutionCallback,
+        TestExecutionExceptionHandler {
+
+
+    private int totalRepeats = 0;
+    private int minSuccess = 1;
+    private List<Class<? extends Throwable>> repeatableExceptions;
+    private boolean repeatableExceptionAppeared = false;
+    private List<Boolean> historyExceptionAppear;
 
     private static final String METHOD_CONTEXT_KEY = "context";
 
@@ -56,9 +69,38 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         ParameterizedTestMethodContext methodContext = getStore(extensionContext)//
                 .get(METHOD_CONTEXT_KEY, ParameterizedTestMethodContext.class);
         ParameterizedTestNameFormatter formatter = createNameFormatter(templateMethod, displayName);
+
+        ParameterizedRepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
+                .flatMap(testMethods -> findAnnotation(testMethods, ParameterizedRepeatedIfExceptionsTest.class))
+                .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
+                        + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
+
+        totalRepeats = annotationParams.repeats();
+        minSuccess = annotationParams.minSuccess();
+        historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+        Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
+        Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
+
+
         AtomicLong invocationCount = new AtomicLong(0); //Определяем начальную составляющую числа вызовов.
         //Тут надо понимать, что вызывается тест с аргументом. ЭТО ОДНА СУЩНОСТЬ И НАМ НУЖНО ПОВТОРИТЬ ИМЕННО ЭТОТ ТЕСТ СТОЛЬКО РАЗ СКОЛЬКО ПОТРЕБУЕТСЯ
-        return findRepeatableAnnotations(templateMethod, ArgumentsSource.class)
+
+
+        //СОЗДАТЬ СПЛИТИТЕРАТОР и там обработать эти аргументы и создать уже invocationContext!!
+//        Stream<Object[]> stream = findRepeatableAnnotations(templateMethod, ArgumentsSource.class)
+//                .stream()
+//                .map(ArgumentsSource::value)
+//                .map(this::instantiateArgumentsProvider)
+//                .map(provider -> AnnotationConsumerInitializer.initialize(templateMethod, provider))
+//                .flatMap(provider -> arguments(provider, extensionContext))
+//                .map(Arguments::get)
+//                .map(arguments -> consumedArguments(arguments, methodContext));
+
+        //.map(arguments -> createInvocationContext(formatter, methodContext, arguments));
+//                .peek(invocationContext -> invocationCount.incrementAndGet())
+//                .onClose(() -> Preconditions.condition(invocationCount.get() > 0, "Configuration error"));
+
+        List<Object[]> collect = findRepeatableAnnotations(templateMethod, ArgumentsSource.class)
                 .stream()
                 .map(ArgumentsSource::value)
                 .map(this::instantiateArgumentsProvider)
@@ -66,10 +108,139 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 .flatMap(provider -> arguments(provider, extensionContext))
                 .map(Arguments::get)
                 .map(arguments -> consumedArguments(arguments, methodContext))
-                .map(arguments -> createInvocationContext(formatter, methodContext, arguments))
-                .peek(invocationContext -> invocationCount.incrementAndGet())
-                .onClose(() -> Preconditions.condition(invocationCount.get() > 0, "Configuration error"));
+                .collect(Collectors.toList());
+
+        Spliterator<TestTemplateInvocationContext> spliterator =
+                spliteratorUnknownSize(new TestTemplateIteratorParams(collect, formatter, methodContext), Spliterator.NONNULL);
+        return stream(spliterator, false);
+
     }
+
+    @Override
+    public void beforeTestExecution(ExtensionContext context) {
+        repeatableExceptions = Stream.of(context.getTestMethod()
+                .flatMap(testMethods -> findAnnotation(testMethods, ParameterizedRepeatedIfExceptionsTest.class))
+                .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
+                .exceptions()
+        ).collect(Collectors.toList());
+        repeatableExceptions.add(TestAbortedException.class);
+    }
+
+    @Override
+    public void afterTestExecution(ExtensionContext context) {
+        boolean exceptionAppeared = exceptionAppeared(context);
+        historyExceptionAppear.add(exceptionAppeared);
+    }
+
+    private boolean exceptionAppeared(ExtensionContext extensionContext) {
+        Class<? extends Throwable> exception = extensionContext.getExecutionException()
+                .orElse(new RepeatedIfException("There is no exception in context")).getClass();
+        return repeatableExceptions.stream()
+                .anyMatch(ex -> ex.isAssignableFrom(exception) && !RepeatedIfException.class.isAssignableFrom(exception));
+    }
+
+    @Override
+    public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+        if (appearedExceptionDoesNotAllowRepetitions(throwable)) {
+            throw throwable;
+        }
+        repeatableExceptionAppeared = true;
+        long currentSuccessCount = historyExceptionAppear.stream().filter(exceptionAppeared -> !exceptionAppeared).count();
+        if (currentSuccessCount < minSuccess) {
+            if (isMinSuccessTargetStillReachable(minSuccess)) {
+                throw new TestAbortedException("Do not fail completely but repeat the test", throwable); //не фэйлим тест а прерываем!
+            } else {
+                throw throwable;
+            }
+        }
+    }
+
+    private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
+        return repeatableExceptions.stream().noneMatch(ex -> ex.isAssignableFrom(appearedException.getClass()));
+    }
+
+    private boolean isMinSuccessTargetStillReachable(long minSuccessCount) {
+        return historyExceptionAppear.stream().filter(bool -> bool).count() < totalRepeats - minSuccessCount;
+    }
+
+    /**
+     * TestTemplateIteratorParams (Repeat test if it failed)
+     */
+    class TestTemplateIteratorParams implements Iterator<TestTemplateInvocationContext> {
+
+        final List<Object[]> params;
+        final ParameterizedTestNameFormatter formatter;
+        final ParameterizedTestMethodContext methodContext;
+        final AtomicLong invocationCount;
+        final AtomicLong paramsCount;
+
+        int currentIndex = 0;
+
+        public TestTemplateIteratorParams(List<Object[]> arguments, final ParameterizedTestNameFormatter formatter, final ParameterizedTestMethodContext methodContext) {
+            this.params = arguments;
+            this.formatter = formatter;
+            this.methodContext = methodContext;
+            this.invocationCount = new AtomicLong(params.size() - 1);
+            this.paramsCount = new AtomicLong(0);
+
+
+        }
+
+        @Override
+        public boolean hasNext() {
+            if(historyExceptionAppear.stream().anyMatch(ex -> ex)  && currentIndex < totalRepeats){
+                return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
+            }
+
+//            if (currentIndex == 0) {
+//                return true; //Если индекс повторений равно
+//            }
+
+            //1. Проверить что у нас есть еще аргументы
+            //2. Проверить, что у нас индекс не перегрался
+//
+//            if (currentIndex == 0) {
+//                System.out.println("dsf");
+//                return true;
+//            }
+
+            //invocationCount - количество вызовов
+            return invocationCount.get() >= paramsCount.get();
+        }
+
+        @Override
+        public TestTemplateInvocationContext next() {
+            int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
+
+            //Получить значение аргумента
+            if (hasNext()) {
+
+                int currentParam = paramsCount.intValue();
+
+                if (repeatableExceptionAppeared && currentIndex < totalRepeats) {
+                    currentIndex++;
+                    repeatableExceptionAppeared = false;
+                    //paramsCount.decrementAndGet(); //понижаем текущию позицию
+                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get((int) paramsCount.decrementAndGet() <= 0 ?  0 : (int) paramsCount.get()));
+                }
+                if (currentIndex == totalRepeats) {
+                    paramsCount.incrementAndGet();
+                }
+
+                currentIndex = 0;
+                return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam));
+            }
+            throw new NoSuchElementException();
+        }
+
+        //Понять что делать с getAndIncrement и decrementAndGet. Не правильно их обрабатваю!
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
 
     private ParameterizedTestNameFormatter createNameFormatter(Method templateMethod, String displayName) {
         ParameterizedRepeatedIfExceptionsTest parameterizedTest = findAnnotation(templateMethod, ParameterizedRepeatedIfExceptionsTest.class).get();
@@ -83,15 +254,13 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     protected static Stream<? extends Arguments> arguments(ArgumentsProvider provider, ExtensionContext context) {
         try {
             return provider.provideArguments(context);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw ExceptionUtils.throwAsUncheckedException(e);
         }
     }
 
     //Передается форматтер, контекст метода и список аргументов
-    private TestTemplateInvocationContext createInvocationContext(ParameterizedTestNameFormatter formatter,
-                                                                  ParameterizedTestMethodContext methodContext, Object[] arguments) {
+    private TestTemplateInvocationContext createInvocationContext(ParameterizedTestNameFormatter formatter, ParameterizedTestMethodContext methodContext, Object[] arguments) {
         return new ParameterizedTestInvocationContext(formatter, methodContext, arguments);
     }
 
@@ -104,8 +273,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     private ArgumentsProvider instantiateArgumentsProvider(Class<? extends ArgumentsProvider> clazz) {
         try {
             return ReflectionUtils.newInstance(clazz);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             if (ex instanceof NoSuchMethodException) {
                 String message = String.format("Failed to find a no-argument constructor for ArgumentsProvider [%s]. "
                                 + "Please ensure that a no-argument constructor exists and "

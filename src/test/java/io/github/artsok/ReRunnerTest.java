@@ -148,10 +148,11 @@ public class ReRunnerTest {
 //    }
 
 
-    @ParameterizedRepeatedIfExceptionsTest(repeats = 2, exceptions = NumberFormatException.class, minSuccess = 1)
-    @ValueSource(ints = { 1, 2, 3 })
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 2, exceptions = RuntimeException.class, minSuccess = 1)
+    @ValueSource(ints = { 4, 5, 6, 7 })
     void testWithValueSourceOurImpl(int argument) {
-        assertTrue(argument > 0 && argument < 4);
+        throw new RuntimeException("");
+        //System.out.println(argument);
     }
 
 //    @Test

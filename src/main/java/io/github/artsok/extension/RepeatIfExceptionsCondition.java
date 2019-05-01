@@ -68,9 +68,9 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      * @param extensionContext - encapsulates the context in which the current test or container is being executed
      * @return true/false
      */
-    //@Override
+    @Override
     public boolean supportsTestTemplate(ExtensionContext extensionContext) {
-        return isAnnotated(extensionContext.getTestMethod(), RepeatedIfExceptionsTest.class);
+        return isAnnotated(extensionContext.getTestMethod(), ParameterizedRepeatedIfExceptionsTest.class);
     }
 
 
@@ -84,8 +84,8 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
         Preconditions.notNull(extensionContext.getTestMethod().orElse(null), "Test method must not be null");
 
-        RepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
-                .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
+        ParameterizedRepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
+                .flatMap(testMethods -> findAnnotation(testMethods, ParameterizedRepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
                         + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
 
@@ -97,7 +97,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         String displayName = extensionContext.getDisplayName();
 
-        formatter = displayNameFormatter(annotationParams, displayName);
+        //formatter = displayNameFormatter(annotationParams, displayName);
 
         //Convert logic of repeated handler to spliterator
         Spliterator<TestTemplateInvocationContext> spliterator =
