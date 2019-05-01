@@ -210,21 +210,18 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
         @Override
         public TestTemplateInvocationContext next() {
-            int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
 
             //Получить значение аргумента
             if (hasNext()) {
-
                 int currentParam = paramsCount.intValue();
 
                 if (repeatableExceptionAppeared && currentIndex < totalRepeats) {
                     currentIndex++;
                     repeatableExceptionAppeared = false;
-                    //paramsCount.decrementAndGet(); //понижаем текущию позицию
-                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get((int) paramsCount.decrementAndGet() <= 0 ?  0 : (int) paramsCount.get()));
+                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
                 }
-                if (currentIndex == totalRepeats) {
-                    paramsCount.incrementAndGet();
+                if (currentIndex == totalRepeats || !repeatableExceptionAppeared) {   //или если ошибки не появилось инкрементировать. Нужно для valid прохождений
+                    paramsCount.incrementAndGet(); //вызывается при первом разе сразу
                 }
 
                 currentIndex = 0;

@@ -148,7 +148,7 @@ public class ReRunnerTest {
 //    }
 
 
-    @ParameterizedRepeatedIfExceptionsTest(repeats = 2, exceptions = RuntimeException.class, minSuccess = 1)
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 3, exceptions = RuntimeException.class, minSuccess = 1)
     @ValueSource(ints = { 4, 5, 6, 7 })
     void testWithValueSourceOurImpl(int argument) {
         throw new RuntimeException("");
