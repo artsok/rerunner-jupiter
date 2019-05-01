@@ -30,7 +30,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMetho
  * @author Artem Sokovets
  */
 public class ReRunnerTest {
-  //  private ThreadLocalRandom random = ThreadLocalRandom.current();
+    private ThreadLocalRandom random = ThreadLocalRandom.current();
 
 //    @ProgrammaticTest
 //    @RepeatedIfExceptionsTest(repeats = 2)
@@ -148,14 +148,17 @@ public class ReRunnerTest {
 //    }
 
 
-    @ParameterizedRepeatedIfExceptionsTest(repeats = 3, exceptions = RuntimeException.class, minSuccess = 1)
-    @ValueSource(ints = { 4, 5, 6, 7 })
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
+    @ValueSource(ints = {4, 5, 6, 7})
     void testWithValueSourceOurImpl(int argument) {
-        throw new RuntimeException("");
-        //System.out.println(argument);
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Error in Test");
+        }
+        // throw new RuntimeException("");
+       // System.out.println(argument);
     }
 
-//    @Test
+    //    @Test
 //    void runReRunTest7() throws Exception {
 //        assertTestResults("reRunTest7", false, 7, 6, 3);
 //    }
@@ -167,7 +170,7 @@ public class ReRunnerTest {
         throw new RuntimeException("Error in Test");
     }
 
-//    @Test
+    //    @Test
 //    void runReRunTest8() throws Exception {
 //        assertTestResults("reRunTest8", false, 1, 0, 0);
 //    }
@@ -193,7 +196,8 @@ public class ReRunnerTest {
         assertEquals(abortedTests, listener.getSummary().getTestsAbortedCount(), "aborted test runs");
         assertEquals(skippedTests, listener.getSummary().getTestsSkippedCount(), "skipped test runs");
     }
-//
+
+    //
     @Tag("programmatic-tests")
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)

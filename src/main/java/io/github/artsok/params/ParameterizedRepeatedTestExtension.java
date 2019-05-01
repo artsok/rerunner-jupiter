@@ -130,6 +130,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     public void afterTestExecution(ExtensionContext context) {
         boolean exceptionAppeared = exceptionAppeared(context);
         historyExceptionAppear.add(exceptionAppeared);
+
     }
 
     private boolean exceptionAppeared(ExtensionContext extensionContext) {
@@ -145,14 +146,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             throw throwable;
         }
         repeatableExceptionAppeared = true;
-        long currentSuccessCount = historyExceptionAppear.stream().filter(exceptionAppeared -> !exceptionAppeared).count();
-        if (currentSuccessCount < minSuccess) {
-            if (isMinSuccessTargetStillReachable(minSuccess)) {
-                throw new TestAbortedException("Do not fail completely but repeat the test", throwable); //не фэйлим тест а прерываем!
-            } else {
-                throw throwable;
-            }
-        }
+        throw throwable;
     }
 
     private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
@@ -214,17 +208,27 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             //Получить значение аргумента
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
+                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
+                int UNsuccessfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
+                System.out.println(UNsuccessfulTestRepetitionsCount);
 
-                if (repeatableExceptionAppeared && currentIndex < totalRepeats) {
+                if (repeatableExceptionAppeared  && currentIndex < totalRepeats) {
                     currentIndex++;
                     repeatableExceptionAppeared = false;
                     return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
                 }
+
                 if (currentIndex == totalRepeats || !repeatableExceptionAppeared) {   //или если ошибки не появилось инкрементировать. Нужно для valid прохождений
                     paramsCount.incrementAndGet(); //вызывается при первом разе сразу
+                    repeatableExceptionAppeared = false;
+                    historyExceptionAppear.clear();
                 }
 
+                //successfulTestRepetitionsCount != minSuccess
+
+
                 currentIndex = 0;
+
                 return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam));
             }
             throw new NoSuchElementException();
