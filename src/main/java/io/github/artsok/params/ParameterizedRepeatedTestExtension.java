@@ -2,7 +2,6 @@ package io.github.artsok.params;
 
 import io.github.artsok.ParameterizedRepeatedIfExceptionsTest;
 import io.github.artsok.extension.RepeatedIfException;
-import io.github.artsok.extension.RepeatedIfExceptionsInvocationContext;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -82,24 +81,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
 
 
-        //AtomicLong invocationCount = new AtomicLong(0); //Определяем начальную составляющую числа вызовов.
-        //Тут надо понимать, что вызывается тест с аргументом. ЭТО ОДНА СУЩНОСТЬ И НАМ НУЖНО ПОВТОРИТЬ ИМЕННО ЭТОТ ТЕСТ СТОЛЬКО РАЗ СКОЛЬКО ПОТРЕБУЕТСЯ
-
-
-        //СОЗДАТЬ СПЛИТИТЕРАТОР и там обработать эти аргументы и создать уже invocationContext!!
-//        Stream<Object[]> stream = findRepeatableAnnotations(templateMethod, ArgumentsSource.class)
-//                .stream()
-//                .map(ArgumentsSource::value)
-//                .map(this::instantiateArgumentsProvider)
-//                .map(provider -> AnnotationConsumerInitializer.initialize(templateMethod, provider))
-//                .flatMap(provider -> arguments(provider, extensionContext))
-//                .map(Arguments::get)
-//                .map(arguments -> consumedArguments(arguments, methodContext));
-
-        //.map(arguments -> createInvocationContext(formatter, methodContext, arguments));
-//                .peek(invocationContext -> invocationCount.incrementAndGet())
-//                .onClose(() -> Preconditions.condition(invocationCount.get() > 0, "Configuration error"));
-
         List<Object[]> collect = findRepeatableAnnotations(templateMethod, ArgumentsSource.class)
                 .stream()
                 .map(ArgumentsSource::value)
@@ -160,8 +141,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         final AtomicLong invocationCount;
         final AtomicLong paramsCount;
 
-         int successfulTestRepetitionCount = 0;
-
         int currentIndex = 0;
 
         public TestTemplateIteratorParams(List<Object[]> arguments, final ParameterizedTestNameFormatter formatter, final ParameterizedTestMethodContext methodContext) {
@@ -180,19 +159,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
             }
 
-//            if (currentIndex == 0) {
-//                return true; //Если индекс повторений равно
-//            }
-
-            //1. Проверить что у нас есть еще аргументы
-            //2. Проверить, что у нас индекс не перегрался
-//
-//            if (currentIndex == 0) {
-//                System.out.println("dsf");
-//                return true;
-//            }
-
-            //invocationCount - количество вызовов
             return invocationCount.get() >= paramsCount.get();
         }
 
@@ -223,13 +189,12 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 if (errorTestRepetitionsCountForOneParameter >= 1  && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneParameter != minSuccess   ) {
                     currentIndex++;
                     repeatableExceptionAppeared = false; //Drop exception
-                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1)); //get last param
+                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
                 }
 
-                if (currentIndex == totalRepeats || !repeatableExceptionAppeared) {   //или если ошибки не появилось инкрементировать. Нужно для valid прохождений
+                if (currentIndex == totalRepeats || !repeatableExceptionAppeared) {
                     paramsCount.incrementAndGet();
                     repeatableExceptionAppeared = false;
-                    successfulTestRepetitionCount = 0;
                     historyExceptionAppear.clear();
                 }
 
