@@ -212,17 +212,22 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
 
-                int errorTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
-                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().skip(historyExceptionAppear.size() - minSuccess <= 0 ? 0 : historyExceptionAppear.size() - minSuccess).filter(b -> !b).count());
 
-                if (errorTestRepetitionsCount >= 1  && currentIndex < totalRepeats && successfulTestRepetitionsCount != minSuccess   ) { //При false не вычесляется повторения для minSuccessЮ когда ошибки нет, Мы просто не можем зайти в этот метод && successfulTestRepetitionsCount != minSuccess
+                int errorTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
+                int successfulTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear
+                        .stream()
+                        .skip(historyExceptionAppear.size() - minSuccess <= 0 ? 0 : historyExceptionAppear.size() - minSuccess)
+                        .filter(b -> !b)
+                        .count());
+
+                if (errorTestRepetitionsCountForOneParameter >= 1  && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneParameter != minSuccess   ) {
                     currentIndex++;
-                    repeatableExceptionAppeared = false;
-                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
+                    repeatableExceptionAppeared = false; //Drop exception
+                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1)); //get last param
                 }
 
                 if (currentIndex == totalRepeats || !repeatableExceptionAppeared) {   //или если ошибки не появилось инкрементировать. Нужно для valid прохождений
-                    paramsCount.incrementAndGet(); //вызывается при первом разе сразу
+                    paramsCount.incrementAndGet();
                     repeatableExceptionAppeared = false;
                     successfulTestRepetitionCount = 0;
                     historyExceptionAppear.clear();
@@ -233,8 +238,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             }
             throw new NoSuchElementException();
         }
-
-        //Понять что делать с getAndIncrement и decrementAndGet. Не правильно их обрабатваю!
 
         @Override
         public void remove() {
