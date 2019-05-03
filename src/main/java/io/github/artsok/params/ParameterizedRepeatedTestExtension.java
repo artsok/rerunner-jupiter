@@ -24,16 +24,14 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.*;
 
-public class ParameterizedRepeatedTestExtension implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback, AfterTestExecutionCallback,
-        TestExecutionExceptionHandler {
-
+public class ParameterizedRepeatedTestExtension implements TestTemplateInvocationContextProvider,
+        BeforeTestExecutionCallback, AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
     private int totalRepeats = 0;
     private int minSuccess = 1;
     private List<Class<? extends Throwable>> repeatableExceptions;
     private boolean repeatableExceptionAppeared = false;
-    private List<Boolean> historyExceptionAppear;
-
+    private final List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
     private static final String METHOD_CONTEXT_KEY = "context";
 
     @Override
@@ -67,7 +65,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         String displayName = extensionContext.getDisplayName();
         ParameterizedTestMethodContext methodContext = getStore(extensionContext)//
                 .get(METHOD_CONTEXT_KEY, ParameterizedTestMethodContext.class);
-        ParameterizedTestNameFormatter formatter = createNameFormatter(templateMethod, displayName);
+        ParameterizedRepeatedIfExceptionsTestNameFormatter formatter = createNameFormatter(templateMethod, displayName);
 
         ParameterizedRepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, ParameterizedRepeatedIfExceptionsTest.class))
@@ -76,7 +74,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
         totalRepeats = annotationParams.repeats();
         minSuccess = annotationParams.minSuccess();
-        historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
 
@@ -115,7 +113,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     }
 
     private boolean exceptionAppeared(ExtensionContext extensionContext) {
-        if(extensionContext.getExecutionException().isPresent()) {
+        if (extensionContext.getExecutionException().isPresent()) {
             Class<? extends Throwable> exception = extensionContext.getExecutionException().get().getClass();
             return repeatableExceptions.stream().anyMatch(ex -> ex.isAssignableFrom(exception));
         }
@@ -129,39 +127,33 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     }
 
 
-
     /**
      * TestTemplateIteratorParams (Repeat test if it failed)
      */
     class TestTemplateIteratorParams implements Iterator<TestTemplateInvocationContext> {
 
-        final List<Object[]> params;
-        final ParameterizedTestNameFormatter formatter;
-        final ParameterizedTestMethodContext methodContext;
-        final AtomicLong invocationCount;
-        final AtomicLong paramsCount;
+        private final List<Object[]> params;
+        private final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter;
+        private final ParameterizedTestMethodContext methodContext;
+        private final AtomicLong invocationCount;
+        private final AtomicLong paramsCount;
+        private int currentIndex = 0;
 
-        int currentIndex = 0;
-
-        public TestTemplateIteratorParams(List<Object[]> arguments, final ParameterizedTestNameFormatter formatter, final ParameterizedTestMethodContext methodContext) {
+        TestTemplateIteratorParams(List<Object[]> arguments, final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter, final ParameterizedTestMethodContext methodContext) {
             this.params = arguments;
             this.formatter = formatter;
             this.methodContext = methodContext;
             this.invocationCount = new AtomicLong(params.size() - 1);
             this.paramsCount = new AtomicLong(0);
-
-
         }
 
         @Override
         public boolean hasNext() {
-            if(historyExceptionAppear.stream().anyMatch(ex -> ex)  && currentIndex < totalRepeats){
+            if (historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats) {
                 return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
             }
-
             return invocationCount.get() >= paramsCount.get();
         }
-
 
         /**
          * Return next ParameterizedTestInvocationContext. Managing several situations:
@@ -177,8 +169,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             //Получить значение аргумента
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
-
-
                 int errorTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
                 int successfulTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear
                         .stream()
@@ -186,10 +176,10 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                         .filter(b -> !b)
                         .count());
 
-                if (errorTestRepetitionsCountForOneParameter >= 1  && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneParameter != minSuccess   ) {
+                if (errorTestRepetitionsCountForOneParameter >= 1 && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneParameter != minSuccess) {
                     currentIndex++;
-                    repeatableExceptionAppeared = false; //Drop exception
-                    return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
+                    repeatableExceptionAppeared = false;
+                    return new ParameterizedTestInvocationContext(currentIndex, totalRepeats, formatter, methodContext, params.get(currentParam - 1));
                 }
 
                 if (currentIndex == totalRepeats || !repeatableExceptionAppeared) {
@@ -199,7 +189,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 }
 
                 currentIndex = 0;
-                return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam));
+                return new ParameterizedTestInvocationContext(0, 0, formatter, methodContext, params.get(currentParam));
             }
             throw new NoSuchElementException();
         }
@@ -211,13 +201,19 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     }
 
 
-    private ParameterizedTestNameFormatter createNameFormatter(Method templateMethod, String displayName) {
+    private ParameterizedRepeatedIfExceptionsTestNameFormatter createNameFormatter(Method templateMethod, String displayName) {
         ParameterizedRepeatedIfExceptionsTest parameterizedTest = findAnnotation(templateMethod, ParameterizedRepeatedIfExceptionsTest.class).get();
         String pattern = Preconditions.notBlank(parameterizedTest.name().trim(),
                 () -> String.format(
                         "Configuration error: @ParameterizedTest on method [%s] must be declared with a non-empty name.",
                         templateMethod));
-        return new ParameterizedTestNameFormatter(pattern, displayName);
+
+        String repeatedNamePattern = Preconditions.notBlank(parameterizedTest.repeatedName().trim(), () -> String.format(
+                "Configuration error: @ParameterizedTest on method [%s] must be declared with a non-empty name.",
+                templateMethod));
+
+
+        return new ParameterizedRepeatedIfExceptionsTestNameFormatter(pattern, displayName, repeatedNamePattern);
     }
 
     protected static Stream<? extends Arguments> arguments(ArgumentsProvider provider, ExtensionContext context) {
@@ -226,11 +222,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         } catch (Exception e) {
             throw ExceptionUtils.throwAsUncheckedException(e);
         }
-    }
-
-    //Передается форматтер, контекст метода и список аргументов
-    private TestTemplateInvocationContext createInvocationContext(ParameterizedTestNameFormatter formatter, ParameterizedTestMethodContext methodContext, Object[] arguments) {
-        return new ParameterizedTestInvocationContext(formatter, methodContext, arguments);
     }
 
     private Object[] consumedArguments(Object[] arguments, ParameterizedTestMethodContext methodContext) {

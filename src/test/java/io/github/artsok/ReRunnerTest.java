@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
@@ -17,10 +19,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 
 
@@ -148,14 +155,52 @@ public class ReRunnerTest {
 //    }
 
 
-    @ParameterizedRepeatedIfExceptionsTest(repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
+    @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
+            repeatedName = "Repeat if the test failed {currentRepetition} of {totalRepetitions}",
+            repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
     @ValueSource(ints = {4, 5, 6, 7})
     void testWithValueSourceOurImpl(int argument) {
         if (random.nextInt() % 2 == 0) {
             throw new RuntimeException("Error in Test");
         }
         // throw new RuntimeException("");
-       // System.out.println(argument);
+       //System.out.println(argument);
+    }
+
+    @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
+            repeatedName = "Repetition1 if the test failed {currentRepetition} of {totalRepetitions}",
+            repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
+    @ValueSource(ints = {4, 5, 6, 7})
+    void testWithValueSourceOurImpl1(int argument) {
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Error in Test");
+        }
+        // throw new RuntimeException("");
+        //System.out.println(argument);
+    }
+
+
+
+    @DisplayName("Display name of container")
+    @ParameterizedRepeatedIfExceptionsTest(name = "Year {0} is a leap year.", repeats = 2, exceptions = RuntimeException.class, minSuccess = 1)
+    @MethodSource("stringIntAndListProvider")
+    void testWithMultiArgMethodSource(String str, int num, List<String> list)  {
+        assertEquals(5, str.length());
+        assertTrue(num >= 1 && num <= 2);
+        assertEquals(2, list.size());
+//        if (random.nextInt() % 2 == 0) {
+//            throw new RuntimeException("Error in Test");
+//        }
+
+
+
+    }
+
+    static Stream<Arguments> stringIntAndListProvider() {
+        return Stream.of(
+                arguments("apple", 1, Arrays.asList("a", "b")),
+                arguments("lemon", 2, Arrays.asList("x", "y"))
+        );
     }
 
     //    @Test

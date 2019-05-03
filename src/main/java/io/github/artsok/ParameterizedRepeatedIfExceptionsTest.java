@@ -16,7 +16,6 @@
  */
 package io.github.artsok;
 
-import io.github.artsok.extension.RepeatIfExceptionsCondition;
 import io.github.artsok.params.ParameterizedRepeatedTestExtension;
 import org.apiguardian.api.API;
 import org.junit.jupiter.api.TestTemplate;
@@ -30,10 +29,10 @@ import java.lang.annotation.Target;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
- * Annotation which you can put to test method
- * Customize number of repeats and set for what exception you want handler.
- * By default handler Exception.class
- * All logic of this extension at {@link RepeatIfExceptionsCondition}
+ * Annotation which you can put to parameterized test method.
+ * Customize the number of repeats and set for what exception you want handler.
+ * By default set Throwable.class.
+ * All logic of this extension at {@link ParameterizedRepeatedTestExtension}
  *
  * @author Artem Sokovets
  */
@@ -43,6 +42,11 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @ExtendWith(ParameterizedRepeatedTestExtension.class)
 public @interface ParameterizedRepeatedIfExceptionsTest {
 
+    String CURRENT_REPETITION_PLACEHOLDER = "{currentRepetition}";
+
+    String TOTAL_REPETITIONS_PLACEHOLDER = "{totalRepetitions}";
+
+    String REPEATED_DISPLAY_NAME = "Repetition if the test failed " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER;
 
     /**
      * Placeholder for the {@linkplain org.junit.jupiter.api.TestInfo#getDisplayName
@@ -113,21 +117,26 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      */
     String name() default DEFAULT_DISPLAY_NAME;
 
+    String repeatedName() default REPEATED_DISPLAY_NAME;
+
 
     /**
      * Pool of exceptions
+     *
      * @return Exception that handlered
      */
     Class<? extends Throwable>[] exceptions() default Throwable.class;
 
     /**
      * Number of repeats
+     *
      * @return N-times repeat test if it failed
      */
     int repeats();
 
     /**
      * Minimum success
+     *
      * @return After n-times of passed tests will disable all remaining repeats.
      */
     int minSuccess() default 1;

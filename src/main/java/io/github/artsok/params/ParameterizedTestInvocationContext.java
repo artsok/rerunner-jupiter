@@ -13,20 +13,26 @@ package io.github.artsok.params;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
+
 /**
- * @since 5.0
+ * @since 5.0 - COPY PAST FROM ORIGINAL JUNIT 5
  */
 class ParameterizedTestInvocationContext implements TestTemplateInvocationContext {
 
-    private final ParameterizedTestNameFormatter formatter;
+    private final int currentRepetition;
+    private final int totalRepetitions;
+
+    private final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter;
     private final ParameterizedTestMethodContext methodContext;
     private final Object[] arguments;
 
-    ParameterizedTestInvocationContext(ParameterizedTestNameFormatter formatter,
+    ParameterizedTestInvocationContext(int currentRepetition, int totalRepetitions, ParameterizedRepeatedIfExceptionsTestNameFormatter formatter,
                                        ParameterizedTestMethodContext methodContext, Object[] arguments) {
+        this.currentRepetition = currentRepetition;
+        this.totalRepetitions = totalRepetitions;
         this.formatter = formatter;
         this.methodContext = methodContext;
         this.arguments = arguments;
@@ -34,14 +40,13 @@ class ParameterizedTestInvocationContext implements TestTemplateInvocationContex
 
     @Override
     public String getDisplayName(int invocationIndex) {
-        return this.formatter.format(invocationIndex, this.arguments);
+        return this.formatter.format(invocationIndex, this.currentRepetition, this.totalRepetitions, this.arguments);
     }
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return Arrays.asList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments)
+        return singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments)
         );
-        //Надо сюда инджектить дополнительную логику обработки ошибок. Чтобы обработчик был внутри данного темплайте, а не снанужи
     }
 
 }

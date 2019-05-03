@@ -30,9 +30,9 @@ import org.junit.platform.commons.util.StringUtils;
  * Encapsulates access to the parameters of a parameterized test method and
  * caches the converters and aggregators used to resolve them.
  *
- * @since 5.3
+ * @since 5.3 - COPY PAST FROM ORIGINAL JUNIT 5
  */
-public class ParameterizedTestMethodContext {
+class ParameterizedTestMethodContext {
 
     private final List<ParameterizedTestMethodContext.ResolverType> resolverTypes;
     private final ParameterizedTestMethodContext.Resolver[] resolvers;
