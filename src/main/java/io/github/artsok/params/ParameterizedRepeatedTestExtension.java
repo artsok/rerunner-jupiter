@@ -126,24 +126,19 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         repeatableExceptions.add(TestAbortedException.class);
     }
 
+    //Записываем в historyExceptionAppear по конкретным аргументам!
     @Override
     public void afterTestExecution(ExtensionContext context) {
         boolean exceptionAppeared = exceptionAppeared(context);
         historyExceptionAppear.add(exceptionAppeared);
-        System.out.println("size " + historyExceptionAppear.size());
-
     }
 
     private boolean exceptionAppeared(ExtensionContext extensionContext) {
-        Class<? extends Throwable> exception = extensionContext.getExecutionException().get().getClass();
-                //.orElseGet(() -> new RepeatedIfException("There is no exception in context")).getClass();
-        System.out.println(exception);
-
-        System.out.println("dfdf " + repeatableExceptions.stream()
-                .anyMatch(ex -> ex.isAssignableFrom(exception));
-
-        return repeatableExceptions.stream()
-                .anyMatch(ex -> ex.isAssignableFrom(exception) || !RepeatedIfException.class.isAssignableFrom(exception));
+        if(extensionContext.getExecutionException().isPresent()) {
+            Class<? extends Throwable> exception = extensionContext.getExecutionException().get().getClass();
+            return repeatableExceptions.stream().anyMatch(ex -> ex.isAssignableFrom(exception));
+        }
+        return false;
     }
 
     @Override
@@ -208,15 +203,14 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
 
-                //int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
-                System.out.println(successfulTestRepetitionCount);
+                int errorTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
 
-                if (repeatableExceptionAppeared  && currentIndex < totalRepeats && successfulTestRepetitionCount != minSuccess   ) { //При false не вычесляется повторения для minSuccessЮ когда ошибки нет, Мы просто не можем зайти в этот метод && successfulTestRepetitionsCount != minSuccess
+                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().skip(historyExceptionAppear.size() - 2L <= 0 ? 0 : historyExceptionAppear.size() - 2L).limit(2).filter(b -> !b).count());
 
-                    //System.out.println(successfulTestRepetitionsCount);
 
+                if (errorTestRepetitionsCount >= 1  && currentIndex < totalRepeats && successfulTestRepetitionsCount != minSuccess   ) { //При false не вычесляется повторения для minSuccessЮ когда ошибки нет, Мы просто не можем зайти в этот метод && successfulTestRepetitionsCount != minSuccess
                     currentIndex++;
-                    //repeatableExceptionAppeared = false;
+                    repeatableExceptionAppeared = false;
                     return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
                 }
 
@@ -231,7 +225,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
 
                 currentIndex = 0;
-                successfulTestRepetitionCount++;
+                //successfulTestRepetitionCount++;
                 return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam));
             }
             throw new NoSuchElementException();
