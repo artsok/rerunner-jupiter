@@ -196,6 +196,15 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             return invocationCount.get() >= paramsCount.get();
         }
 
+
+        /**
+         * Return next ParameterizedTestInvocationContext. Managing several situations:
+         * 1) Exception in Parameterized Test appears
+         * 2) When the count of tests for one argument (parameter) equal total repeats
+         * 3) If no exception appears start to create new  ParameterizedTestInvocationContext
+         *
+         * @return {@link ParameterizedTestInvocationContext}
+         */
         @Override
         public TestTemplateInvocationContext next() {
 
@@ -204,9 +213,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 int currentParam = paramsCount.intValue();
 
                 int errorTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
-
-                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().skip(historyExceptionAppear.size() - 2L <= 0 ? 0 : historyExceptionAppear.size() - 2L).limit(2).filter(b -> !b).count());
-
+                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().skip(historyExceptionAppear.size() - minSuccess <= 0 ? 0 : historyExceptionAppear.size() - minSuccess).filter(b -> !b).count());
 
                 if (errorTestRepetitionsCount >= 1  && currentIndex < totalRepeats && successfulTestRepetitionsCount != minSuccess   ) { //При false не вычесляется повторения для minSuccessЮ когда ошибки нет, Мы просто не можем зайти в этот метод && successfulTestRepetitionsCount != minSuccess
                     currentIndex++;
@@ -221,11 +228,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                     historyExceptionAppear.clear();
                 }
 
-                //successfulTestRepetitionsCount != minSuccess
-
-
                 currentIndex = 0;
-                //successfulTestRepetitionCount++;
                 return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam));
             }
             throw new NoSuchElementException();
