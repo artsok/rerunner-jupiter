@@ -82,7 +82,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
 
 
-        AtomicLong invocationCount = new AtomicLong(0); //Определяем начальную составляющую числа вызовов.
+        //AtomicLong invocationCount = new AtomicLong(0); //Определяем начальную составляющую числа вызовов.
         //Тут надо понимать, что вызывается тест с аргументом. ЭТО ОДНА СУЩНОСТЬ И НАМ НУЖНО ПОВТОРИТЬ ИМЕННО ЭТОТ ТЕСТ СТОЛЬКО РАЗ СКОЛЬКО ПОТРЕБУЕТСЯ
 
 
@@ -208,13 +208,15 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             //Получить значение аргумента
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
-                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
-                int UNsuccessfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
-                System.out.println(UNsuccessfulTestRepetitionsCount);
 
-                if (repeatableExceptionAppeared  && currentIndex < totalRepeats) {
+                int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
+
+                if (repeatableExceptionAppeared  && currentIndex < totalRepeats && successfulTestRepetitionsCount != minSuccess ) { //При false не вычесляется повторения для minSuccessЮ когда ошибки нет, Мы просто не можем зайти в этот метод
+
+                    System.out.println(successfulTestRepetitionsCount);
+
                     currentIndex++;
-                    repeatableExceptionAppeared = false;
+                    //repeatableExceptionAppeared = false;
                     return new ParameterizedTestInvocationContext(formatter, methodContext, params.get(currentParam - 1));
                 }
 
