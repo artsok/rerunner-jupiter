@@ -24,6 +24,9 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.*;
 
+/**
+ * Extension for {@link ParameterizedRepeatedIfExceptionsTest}
+ */
 public class ParameterizedRepeatedTestExtension implements TestTemplateInvocationContextProvider,
         BeforeTestExecutionCallback, AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
@@ -45,17 +48,16 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
             return false;
         }
 
-        ParameterizedTestMethodContext methodContext = new ParameterizedTestMethodContext(testMethod);
+        ParameterizedRepeatedMethodContext methodContext = new ParameterizedRepeatedMethodContext(testMethod);
 
         Preconditions.condition(methodContext.hasPotentiallyValidSignature(),
                 () -> String.format(
-                        "@ParameterizedTest method [%s] declares formal parameters in an invalid order: "
+                        "@ParameterizedRepeatedIfExceptionsTest method [%s] declares formal parameters in an invalid order: "
                                 + "argument aggregators must be declared after any indexed arguments "
                                 + "and before any arguments resolved by another ParameterResolver.",
                         testMethod.toGenericString()));
 
         getStore(extensionContext).put(METHOD_CONTEXT_KEY, methodContext);
-
         return true;
     }
 
@@ -63,14 +65,14 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext extensionContext) {
         Method templateMethod = extensionContext.getRequiredTestMethod();
         String displayName = extensionContext.getDisplayName();
-        ParameterizedTestMethodContext methodContext = getStore(extensionContext)//
-                .get(METHOD_CONTEXT_KEY, ParameterizedTestMethodContext.class);
+        ParameterizedRepeatedMethodContext methodContext = getStore(extensionContext)//
+                .get(METHOD_CONTEXT_KEY, ParameterizedRepeatedMethodContext.class);
         ParameterizedRepeatedIfExceptionsTestNameFormatter formatter = createNameFormatter(templateMethod, displayName);
 
         ParameterizedRepeatedIfExceptionsTest annotationParams = extensionContext.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, ParameterizedRepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
-                        + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
+                        + "unless the test method is annotated with @ParameterizedRepeatedIfExceptionsTest."));
 
         totalRepeats = annotationParams.repeats();
         minSuccess = annotationParams.minSuccess();
@@ -126,6 +128,52 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         throw throwable;
     }
 
+    private ParameterizedRepeatedIfExceptionsTestNameFormatter createNameFormatter(Method templateMethod, String displayName) {
+        ParameterizedRepeatedIfExceptionsTest parameterizedTest = findAnnotation(templateMethod, ParameterizedRepeatedIfExceptionsTest.class).get();
+        String pattern = Preconditions.notBlank(parameterizedTest.name().trim(),
+                () -> String.format(
+                        "Configuration error: @ParameterizedRepeatedIfExceptionsTest on method [%s] must be declared with a non-empty name.",
+                        templateMethod));
+
+        String repeatedPattern = Preconditions.notBlank(parameterizedTest.repeatedName(), () -> String.format(
+                "Configuration error: @ParameterizedRepeatedIfExceptionsTest on method [%s] must be declared with a non-empty repeated name.",
+                templateMethod));
+
+        return new ParameterizedRepeatedIfExceptionsTestNameFormatter(pattern, displayName, repeatedPattern);
+    }
+
+    protected static Stream<? extends Arguments> arguments(ArgumentsProvider provider, ExtensionContext context) {
+        try {
+            return provider.provideArguments(context);
+        } catch (Exception e) {
+            throw ExceptionUtils.throwAsUncheckedException(e);
+        }
+    }
+
+    private Object[] consumedArguments(Object[] arguments, ParameterizedRepeatedMethodContext methodContext) {
+        int parameterCount = methodContext.getParameterCount();
+        return methodContext.hasAggregator() ? arguments
+                : (arguments.length > parameterCount ? Arrays.copyOf(arguments, parameterCount) : arguments);
+    }
+
+    private ArgumentsProvider instantiateArgumentsProvider(Class<? extends ArgumentsProvider> clazz) {
+        try {
+            return ReflectionUtils.newInstance(clazz);
+        } catch (Exception ex) {
+            if (ex instanceof NoSuchMethodException) {
+                String message = String.format("Failed to find a no-argument constructor for ArgumentsProvider [%s]. "
+                                + "Please ensure that a no-argument constructor exists and "
+                                + "that the class is either a top-level class or a static nested class",
+                        clazz.getName());
+                throw new JUnitException(message, ex);
+            }
+            throw ex;
+        }
+    }
+
+    private ExtensionContext.Store getStore(ExtensionContext context) {
+        return context.getStore(ExtensionContext.Namespace.create(ParameterizedRepeatedTestExtension.class, context.getRequiredTestMethod()));
+    }
 
     /**
      * TestTemplateIteratorParams (Repeat test if it failed)
@@ -134,12 +182,12 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
         private final List<Object[]> params;
         private final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter;
-        private final ParameterizedTestMethodContext methodContext;
+        private final ParameterizedRepeatedMethodContext methodContext;
         private final AtomicLong invocationCount;
         private final AtomicLong paramsCount;
         private int currentIndex = 0;
 
-        TestTemplateIteratorParams(List<Object[]> arguments, final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter, final ParameterizedTestMethodContext methodContext) {
+        TestTemplateIteratorParams(List<Object[]> arguments, final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter, final ParameterizedRepeatedMethodContext methodContext) {
             this.params = arguments;
             this.formatter = formatter;
             this.methodContext = methodContext;
@@ -166,7 +214,6 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         @Override
         public TestTemplateInvocationContext next() {
 
-            //Получить значение аргумента
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
                 int errorTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
@@ -198,54 +245,5 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
         public void remove() {
             throw new UnsupportedOperationException();
         }
-    }
-
-
-    private ParameterizedRepeatedIfExceptionsTestNameFormatter createNameFormatter(Method templateMethod, String displayName) {
-        ParameterizedRepeatedIfExceptionsTest parameterizedTest = findAnnotation(templateMethod, ParameterizedRepeatedIfExceptionsTest.class).get();
-        String pattern = Preconditions.notBlank(parameterizedTest.name().trim(),
-                () -> String.format(
-                        "Configuration error: @ParameterizedTest on method [%s] must be declared with a non-empty name.",
-                        templateMethod));
-
-        String repeatedNamePattern = Preconditions.notBlank(parameterizedTest.repeatedName(), () -> String.format(
-                "Configuration error: @ParameterizedTest on method [%s] must be declared with a non-empty name.",
-                templateMethod));
-
-
-        return new ParameterizedRepeatedIfExceptionsTestNameFormatter(pattern, displayName, repeatedNamePattern);
-    }
-
-    protected static Stream<? extends Arguments> arguments(ArgumentsProvider provider, ExtensionContext context) {
-        try {
-            return provider.provideArguments(context);
-        } catch (Exception e) {
-            throw ExceptionUtils.throwAsUncheckedException(e);
-        }
-    }
-
-    private Object[] consumedArguments(Object[] arguments, ParameterizedTestMethodContext methodContext) {
-        int parameterCount = methodContext.getParameterCount();
-        return methodContext.hasAggregator() ? arguments
-                : (arguments.length > parameterCount ? Arrays.copyOf(arguments, parameterCount) : arguments);
-    }
-
-    private ArgumentsProvider instantiateArgumentsProvider(Class<? extends ArgumentsProvider> clazz) {
-        try {
-            return ReflectionUtils.newInstance(clazz);
-        } catch (Exception ex) {
-            if (ex instanceof NoSuchMethodException) {
-                String message = String.format("Failed to find a no-argument constructor for ArgumentsProvider [%s]. "
-                                + "Please ensure that a no-argument constructor exists and "
-                                + "that the class is either a top-level class or a static nested class",
-                        clazz.getName());
-                throw new JUnitException(message, ex);
-            }
-            throw ex;
-        }
-    }
-
-    private ExtensionContext.Store getStore(ExtensionContext context) {
-        return context.getStore(ExtensionContext.Namespace.create(ParameterizedRepeatedTestExtension.class, context.getRequiredTestMethod()));
     }
 }

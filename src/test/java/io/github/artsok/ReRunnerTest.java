@@ -154,46 +154,73 @@ public class ReRunnerTest {
 //        assertTrue(argument > 0 && argument < 4);
 //    }
 
-
-    @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
-            //repeatedName = " (Repeat {currentRepetition} of {totalRepetitions})",
-            repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
-    @ValueSource(ints = {4, 5, 6, 7})
-    void testWithValueSourceOurImpl(int argument) {
-        if (random.nextInt() % 2 == 0) {
-            throw new RuntimeException("Error in Test");
-        }
-        // throw new RuntimeException("");
-       //System.out.println(argument);
+    /**
+     * By default total repeats = 1 and minimum success = 1.
+     * If the test failed by this way start to repeat it by one time with one minimum success.
+     *
+     * This example without exceptions.
+     */
+    @ParameterizedRepeatedIfExceptionsTest
+    @ValueSource(ints = {14, 15, 100, -10})
+    void successfulParameterizedTest(int argument) {
+        System.out.println(argument);
     }
 
-    @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
-            repeatedName = "Repetition1 if the test failed {currentRepetition} of {totalRepetitions}",
-            repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
-    @ValueSource(ints = {4, 5, 6, 7})
-    void testWithValueSourceOurImpl1(int argument) {
-        if (random.nextInt() % 2 == 0) {
-            throw new RuntimeException("Error in Test");
-        }
-        // throw new RuntimeException("");
-        //System.out.println(argument);
+    /**
+     * By default total repeats = 1 and minimum success = 1.
+     * If the test failed by this way start to repeat it by one time with one minimum success.
+     * This example with display name but without exceptions
+     */
+    @DisplayName("Example of parameterized repeated without exception")
+    @ParameterizedRepeatedIfExceptionsTest
+    @ValueSource(ints = {1, 2, 3, 1001})
+    void successfulParameterizedTestWithDisplayName(int argument) {
+        System.out.println(argument);
     }
 
+    /**
+     * By default total repeats = 1 and minimum success = 1.
+     * If the test failed by this way start to repeat it by one time with one minimum success.
+     *
+     * This example with display name but with exception. Exception depends on random number generation.
+     */
+    @DisplayName("Example of parameterized repeated with exception")
+    @ParameterizedRepeatedIfExceptionsTest
+    @ValueSource(strings = {"Hi", "Hello", "Bonjour", "Privet"})
+    void errorParameterizedTestWithDisplayName(String argument) {
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Exception " + argument);
+        }
+    }
 
+    /**
+     * By default total repeats = 1 and minimum success = 1.
+     * If the test failed by this way start to repeat it by one time with one minimum success.
+     *
+     * This example with display name, repeated display name, 10 repeats and 2 minimum success with exceptions.
+     * Exception depends on random number generation.
+     */
+    @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
+            repeatedName = " (Repeat {currentRepetition} of {totalRepetitions})",
+            repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
+    @ValueSource(ints = {4, 5, 6, 7})
+    void errorParameterizedTestWithDisplayNameAndRepeatedName(int argument) {
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Exception in Test " + argument);
+        }
+    }
 
     @DisplayName("Display name of container")
-    @ParameterizedRepeatedIfExceptionsTest(name = "Year {0} is a leap year.", repeats = 2, exceptions = RuntimeException.class, minSuccess = 1)
+    @ParameterizedRepeatedIfExceptionsTest(name = "Year {0} is a leap year.",
+            repeats = 4, exceptions = RuntimeException.class, minSuccess = 2)
     @MethodSource("stringIntAndListProvider")
-    void testWithMultiArgMethodSource(String str, int num, List<String> list)  {
+    void errorParameterizedTestWithMultiArgMethodSource(String str, int num, List<String> list)  {
         assertEquals(5, str.length());
         assertTrue(num >= 1 && num <= 2);
         assertEquals(2, list.size());
-//        if (random.nextInt() % 2 == 0) {
-//            throw new RuntimeException("Error in Test");
-//        }
-
-
-
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Exception in Test");
+        }
     }
 
     static Stream<Arguments> stringIntAndListProvider() {
@@ -203,11 +230,7 @@ public class ReRunnerTest {
         );
     }
 
-    //    @Test
-//    void runReRunTest7() throws Exception {
-//        assertTestResults("reRunTest7", false, 7, 6, 3);
-//    }
-//
+
     @ProgrammaticTest
     @DisplayName("Ultimately fail a test as soon as an unrepeatable exception occurs.")
     @RepeatedIfExceptionsTest(repeats = 2, exceptions = NumberFormatException.class, minSuccess = 1)

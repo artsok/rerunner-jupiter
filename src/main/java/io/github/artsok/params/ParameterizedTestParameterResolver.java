@@ -1,13 +1,3 @@
-/*
- * Copyright 2015-2019 the original author or authors.
- *
- * All rights reserved. This program and the accompanying materials are
- * made available under the terms of the Eclipse Public License v2.0 which
- * accompanies this distribution and is available at
- *
- * http://www.eclipse.org/legal/epl-v20.html
- */
-
 package io.github.artsok.params;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -19,48 +9,47 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
 /**
- * @since 5.0 - COPY PAST FROM ORIGINAL JUNIT 5
+ * @since 5.0 - FULL COPY PAST FROM ORIGINAL JUNIT 5
  */
 class ParameterizedTestParameterResolver implements ParameterResolver {
 
-	private final ParameterizedTestMethodContext methodContext;
-	private final Object[] arguments;
+    private final ParameterizedRepeatedMethodContext methodContext;
+    private final Object[] arguments;
 
-	ParameterizedTestParameterResolver(ParameterizedTestMethodContext methodContext, Object[] arguments) {
-		this.methodContext = methodContext;
-		this.arguments = arguments;
-	}
+    ParameterizedTestParameterResolver(ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
+        this.methodContext = methodContext;
+        this.arguments = arguments;
+    }
 
-	@Override
-	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		Executable declaringExecutable = parameterContext.getDeclaringExecutable();
-		Method testMethod = extensionContext.getTestMethod().orElse(null);
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+        Executable declaringExecutable = parameterContext.getDeclaringExecutable();
+        Method testMethod = extensionContext.getTestMethod().orElse(null);
 
-		// Not a @ParameterizedTest method?
-		if (!declaringExecutable.equals(testMethod)) {
-			return false;
-		}
+        // Not a @ParameterizedTest method?
+        if (!declaringExecutable.equals(testMethod)) {
+            return false;
+        }
 
-		// Current parameter is an aggregator?
-		if (this.methodContext.isAggregator(parameterContext.getIndex())) {
-			return true;
-		}
+        // Current parameter is an aggregator?
+        if (this.methodContext.isAggregator(parameterContext.getIndex())) {
+            return true;
+        }
 
-		// Ensure that the current parameter is declared before aggregators.
-		// Otherwise, a different ParameterResolver should handle it.
-		if (this.methodContext.indexOfFirstAggregator() != -1) {
-			return parameterContext.getIndex() < this.methodContext.indexOfFirstAggregator();
-		}
+        // Ensure that the current parameter is declared before aggregators.
+        // Otherwise, a different ParameterResolver should handle it.
+        if (this.methodContext.indexOfFirstAggregator() != -1) {
+            return parameterContext.getIndex() < this.methodContext.indexOfFirstAggregator();
+        }
 
-		// Else fallback to behavior for parameterized test methods without aggregators.
-		return parameterContext.getIndex() < this.arguments.length;
-	}
+        // Else fallback to behavior for parameterized test methods without aggregators.
+        return parameterContext.getIndex() < this.arguments.length;
+    }
 
-	@Override
-	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-			throws ParameterResolutionException {
-
-		return this.methodContext.resolve(parameterContext, this.arguments);
-	}
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        return this.methodContext.resolve(parameterContext, this.arguments);
+    }
 
 }

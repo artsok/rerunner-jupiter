@@ -18,7 +18,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 
 /**
- * @since 5.0 - COPY PAST FROM ORIGINAL JUNIT 5
+ * @since 5.0 - COPY PAST FROM ORIGINAL JUNIT 5 WITH SEVERAL CORRECTIONS
  */
 class ParameterizedTestInvocationContext implements TestTemplateInvocationContext {
 
@@ -26,11 +26,11 @@ class ParameterizedTestInvocationContext implements TestTemplateInvocationContex
     private final int totalRepetitions;
 
     private final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter;
-    private final ParameterizedTestMethodContext methodContext;
+    private final ParameterizedRepeatedMethodContext methodContext;
     private final Object[] arguments;
 
     ParameterizedTestInvocationContext(int currentRepetition, int totalRepetitions, ParameterizedRepeatedIfExceptionsTestNameFormatter formatter,
-                                       ParameterizedTestMethodContext methodContext, Object[] arguments) {
+                                       ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
         this.currentRepetition = currentRepetition;
         this.totalRepetitions = totalRepetitions;
         this.formatter = formatter;
@@ -48,7 +48,6 @@ class ParameterizedTestInvocationContext implements TestTemplateInvocationContex
         return singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments)
         );
     }
-
 }
 
 

@@ -78,7 +78,7 @@ public @interface RepeatedIfExceptionsTest {
      * Number of repeats
      * @return N-times repeat test if it failed
      */
-    int repeats();
+    int repeats() default 1;
 
     /**
      * Minimum success

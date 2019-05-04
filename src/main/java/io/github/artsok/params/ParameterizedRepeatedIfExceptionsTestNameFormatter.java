@@ -1,13 +1,3 @@
-/*
- * Copyright 2015-2019 the original author or authors.
- *
- * All rights reserved. This program and the accompanying materials are
- * made available under the terms of the Eclipse Public License v2.0 which
- * accompanies this distribution and is available at
- *
- * http://www.eclipse.org/legal/epl-v20.html
- */
-
 package io.github.artsok.params;
 
 import org.junit.platform.commons.JUnitException;
@@ -18,7 +8,11 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.*;
+import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.ARGUMENTS_PLACEHOLDER;
+import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.CURRENT_REPETITION_PLACEHOLDER;
+import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.DISPLAY_NAME_PLACEHOLDER;
+import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.INDEX_PLACEHOLDER;
+import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.TOTAL_REPETITIONS_PLACEHOLDER;
 import static java.util.stream.Collectors.joining;
 
 

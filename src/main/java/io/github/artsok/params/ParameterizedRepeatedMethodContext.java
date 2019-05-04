@@ -1,9 +1,7 @@
 package io.github.artsok.params;
 
-
-
-import static io.github.artsok.params.ParameterizedTestMethodContext.ResolverType.AGGREGATOR;
-import static io.github.artsok.params.ParameterizedTestMethodContext.ResolverType.CONVERTER;
+import static io.github.artsok.params.ParameterizedRepeatedMethodContext.ResolverType.AGGREGATOR;
+import static io.github.artsok.params.ParameterizedRepeatedMethodContext.ResolverType.CONVERTER;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
 import java.lang.reflect.Method;
@@ -30,17 +28,17 @@ import org.junit.platform.commons.util.StringUtils;
  * Encapsulates access to the parameters of a parameterized test method and
  * caches the converters and aggregators used to resolve them.
  *
- * @since 5.3 - COPY PAST FROM ORIGINAL JUNIT 5
+ * @since 5.3 - FULL COPY PAST FROM ORIGINAL JUNIT 5
  */
-class ParameterizedTestMethodContext {
+class ParameterizedRepeatedMethodContext {
 
-    private final List<ParameterizedTestMethodContext.ResolverType> resolverTypes;
-    private final ParameterizedTestMethodContext.Resolver[] resolvers;
+    private final List<ParameterizedRepeatedMethodContext.ResolverType> resolverTypes;
+    private final ParameterizedRepeatedMethodContext.Resolver[] resolvers;
 
-    ParameterizedTestMethodContext(Method testMethod) {
+    ParameterizedRepeatedMethodContext(Method testMethod) {
         Parameter[] parameters = testMethod.getParameters();
         this.resolverTypes = new ArrayList<>(parameters.length);
-        this.resolvers = new ParameterizedTestMethodContext.Resolver[parameters.length];
+        this.resolvers = new ParameterizedRepeatedMethodContext.Resolver[parameters.length];
         for (Parameter parameter : parameters) {
             this.resolverTypes.add(isAggregator(parameter) ? AGGREGATOR : CONVERTER);
         }
@@ -135,7 +133,7 @@ class ParameterizedTestMethodContext {
         return getResolver(parameterContext).resolve(parameterContext, arguments);
     }
 
-    private ParameterizedTestMethodContext.Resolver getResolver(ParameterContext parameterContext) {
+    private ParameterizedRepeatedMethodContext.Resolver getResolver(ParameterContext parameterContext) {
         int index = parameterContext.getIndex();
         if (resolvers[index] == null) {
             resolvers[index] = resolverTypes.get(index).createResolver(parameterContext);
@@ -147,14 +145,14 @@ class ParameterizedTestMethodContext {
 
         CONVERTER {
             @Override
-            ParameterizedTestMethodContext.Resolver createResolver(ParameterContext parameterContext) {
+            ParameterizedRepeatedMethodContext.Resolver createResolver(ParameterContext parameterContext) {
                 try { // @formatter:off
                     return AnnotationUtils.findAnnotation(parameterContext.getParameter(), ConvertWith.class)
                             .map(ConvertWith::value)
                             .map(clazz -> (ArgumentConverter) ReflectionUtils.newInstance(clazz))
                             .map(converter -> AnnotationConsumerInitializer.initialize(parameterContext.getParameter(), converter))
-                            .map(ParameterizedTestMethodContext.Converter::new)
-                            .orElse(ParameterizedTestMethodContext.Converter.DEFAULT);
+                            .map(ParameterizedRepeatedMethodContext.Converter::new)
+                            .orElse(ParameterizedRepeatedMethodContext.Converter.DEFAULT);
                 } // @formatter:on
                 catch (Exception ex) {
                     throw parameterResolutionException("Error creating ArgumentConverter", ex, parameterContext);
@@ -164,13 +162,13 @@ class ParameterizedTestMethodContext {
 
         AGGREGATOR {
             @Override
-            ParameterizedTestMethodContext.Resolver createResolver(ParameterContext parameterContext) {
+            ParameterizedRepeatedMethodContext.Resolver createResolver(ParameterContext parameterContext) {
                 try { // @formatter:off
                     return AnnotationUtils.findAnnotation(parameterContext.getParameter(), AggregateWith.class)
                             .map(AggregateWith::value)
                             .map(clazz -> (ArgumentsAggregator) ReflectionSupport.newInstance(clazz))
-                            .map(ParameterizedTestMethodContext.Aggregator::new)
-                            .orElse(ParameterizedTestMethodContext.Aggregator.DEFAULT);
+                            .map(ParameterizedRepeatedMethodContext.Aggregator::new)
+                            .orElse(ParameterizedRepeatedMethodContext.Aggregator.DEFAULT);
                 } // @formatter:on
                 catch (Exception ex) {
                     throw parameterResolutionException("Error creating ArgumentsAggregator", ex, parameterContext);
@@ -178,7 +176,7 @@ class ParameterizedTestMethodContext {
             }
         };
 
-        abstract ParameterizedTestMethodContext.Resolver createResolver(ParameterContext parameterContext);
+        abstract ParameterizedRepeatedMethodContext.Resolver createResolver(ParameterContext parameterContext);
 
     }
 
@@ -188,9 +186,9 @@ class ParameterizedTestMethodContext {
 
     }
 
-    static class Converter implements ParameterizedTestMethodContext.Resolver {
+    static class Converter implements ParameterizedRepeatedMethodContext.Resolver {
 
-        private static final ParameterizedTestMethodContext.Converter DEFAULT = new  ParameterizedTestMethodContext.Converter(DefaultArgumentConverter.INSTANCE);
+        private static final ParameterizedRepeatedMethodContext.Converter DEFAULT = new  ParameterizedRepeatedMethodContext.Converter(DefaultArgumentConverter.INSTANCE);
 
         private final ArgumentConverter argumentConverter;
 
@@ -211,9 +209,9 @@ class ParameterizedTestMethodContext {
 
     }
 
-    static class Aggregator implements ParameterizedTestMethodContext.Resolver {
+    static class Aggregator implements ParameterizedRepeatedMethodContext.Resolver {
 
-        private static final ParameterizedTestMethodContext.Aggregator DEFAULT = new ParameterizedTestMethodContext.Aggregator((accessor, context) -> accessor);
+        private static final ParameterizedRepeatedMethodContext.Aggregator DEFAULT = new ParameterizedRepeatedMethodContext.Aggregator((accessor, context) -> accessor);
 
         private final ArgumentsAggregator argumentsAggregator;
 
