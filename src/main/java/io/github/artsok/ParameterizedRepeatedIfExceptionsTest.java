@@ -1,19 +1,3 @@
-/*
- * (C) Copyright 2017 Artem Sokovets (http://github.com/artsok/)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 package io.github.artsok;
 
 import io.github.artsok.params.ParameterizedRepeatedTestExtension;
@@ -30,7 +14,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Annotation which you can put to parameterized test method.
- * Customize the number of repeats and set for what exception you want handler.
+ * Customize the number of repeats and set for what exception you want handled.
  * By default set Throwable.class.
  * All logic of this extension at {@link ParameterizedRepeatedTestExtension}
  *
@@ -42,11 +26,25 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @ExtendWith(ParameterizedRepeatedTestExtension.class)
 public @interface ParameterizedRepeatedIfExceptionsTest {
 
+    /**
+     * Placeholder for the current repetition count of a {@code @RepeatedTest}
+     * method: <code>{currentRepetition}</code>
+     */
     String CURRENT_REPETITION_PLACEHOLDER = "{currentRepetition}";
 
+    /**
+     * Placeholder for the total number of repetitions of a {@code @RepeatedTest}
+     * method: <code>{totalRepetitions}</code>
+     */
     String TOTAL_REPETITIONS_PLACEHOLDER = "{totalRepetitions}";
 
-    String REPEATED_DISPLAY_NAME = "Repetition if the test failed " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER;
+    /**
+     * Display name pattern for a repeated test: {@value #REPEATED_DISPLAY_NAME}
+     *
+     * @see #CURRENT_REPETITION_PLACEHOLDER
+     * @see #TOTAL_REPETITIONS_PLACEHOLDER
+     */
+    String REPEATED_DISPLAY_NAME = " (Repeated if the test failed " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER + ")";
 
     /**
      * Placeholder for the {@linkplain org.junit.jupiter.api.TestInfo#getDisplayName
@@ -117,7 +115,13 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      */
     String name() default DEFAULT_DISPLAY_NAME;
 
-    String repeatedName() default REPEATED_DISPLAY_NAME;
+    /**
+     * The display name to be used for individual repeated invocations of the
+     * parameterized test; never blank.
+     *
+     * @see java.text.MessageFormat
+     */
+    String repeatedName() default  REPEATED_DISPLAY_NAME;
 
 
     /**
@@ -140,6 +144,4 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      * @return After n-times of passed tests will disable all remaining repeats.
      */
     int minSuccess() default 1;
-
-
 }

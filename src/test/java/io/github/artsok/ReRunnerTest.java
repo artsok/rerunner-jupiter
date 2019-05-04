@@ -156,7 +156,7 @@ public class ReRunnerTest {
 
 
     @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
-            repeatedName = "Repeat if the test failed {currentRepetition} of {totalRepetitions}",
+            //repeatedName = " (Repeat {currentRepetition} of {totalRepetitions})",
             repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
     @ValueSource(ints = {4, 5, 6, 7})
     void testWithValueSourceOurImpl(int argument) {

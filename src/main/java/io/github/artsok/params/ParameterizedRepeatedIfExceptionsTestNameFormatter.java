@@ -52,24 +52,30 @@ class ParameterizedRepeatedIfExceptionsTestNameFormatter {
         return format.format(humanReadableArguments);
     }
 
+
+    /**
+     * Format display message. If exceptions appears use one or other pattern.
+     * @param invocationIndex - Index of argument
+     * @param currentRepetition - Indicate the current repeating index if exceptions appear
+     * @param totalRepetitions - Amount of all repeats
+     * @param arguments - Method arguments
+     * @return {@link String} - Displayed text
+     */
     private String prepareMessageFormatPattern(int invocationIndex, int currentRepetition, int totalRepetitions, Object[] arguments) {
         String result;
         if (currentRepetition != 0 && totalRepetitions != 0) {
             result = pattern
-                    .replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)//
+                    .replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)
                     .replace(INDEX_PLACEHOLDER, String.valueOf(invocationIndex))
-                    .concat(" ")
                     .concat(repeatedNamePattern)
                     .replace(CURRENT_REPETITION_PLACEHOLDER, String.valueOf(currentRepetition))
                     .replace(TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions));
         } else {
             result = pattern
-                    .replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)//
+                    .replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)
                     .replace(INDEX_PLACEHOLDER, String.valueOf(invocationIndex))
                     .replace(repeatedNamePattern, "");
-
         }
-
 
 
         if (result.contains(ARGUMENTS_PLACEHOLDER)) {
@@ -80,7 +86,6 @@ class ParameterizedRepeatedIfExceptionsTestNameFormatter {
             // @formatter:on
             result = result.replace(ARGUMENTS_PLACEHOLDER, replacement);
         }
-
         return result;
     }
 
@@ -94,5 +99,4 @@ class ParameterizedRepeatedIfExceptionsTestNameFormatter {
         }
         return result;
     }
-
 }

@@ -208,7 +208,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                         "Configuration error: @ParameterizedTest on method [%s] must be declared with a non-empty name.",
                         templateMethod));
 
-        String repeatedNamePattern = Preconditions.notBlank(parameterizedTest.repeatedName().trim(), () -> String.format(
+        String repeatedNamePattern = Preconditions.notBlank(parameterizedTest.repeatedName(), () -> String.format(
                 "Configuration error: @ParameterizedTest on method [%s] must be declared with a non-empty name.",
                 templateMethod));
 
