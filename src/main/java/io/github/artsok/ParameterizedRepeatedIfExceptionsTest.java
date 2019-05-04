@@ -39,7 +39,7 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
     String TOTAL_REPETITIONS_PLACEHOLDER = "{totalRepetitions}";
 
     /**
-     * Display name pattern for a repeated test: {@value #REPEATED_DISPLAY_NAME}
+     * Display name pattern for a repeated test
      *
      * @see #CURRENT_REPETITION_PLACEHOLDER
      * @see #TOTAL_REPETITIONS_PLACEHOLDER
@@ -98,20 +98,7 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      * The display name to be used for individual invocations of the
      * parameterized test; never blank or consisting solely of whitespace.
      *
-     * <p>Defaults to {@link #DEFAULT_DISPLAY_NAME}.
-     *
-     * <h4>Supported placeholders</h4>
-     * <ul>
-     * <li>{@link #DISPLAY_NAME_PLACEHOLDER}</li>
-     * <li>{@link #INDEX_PLACEHOLDER}</li>
-     * <li>{@link #ARGUMENTS_PLACEHOLDER}</li>
-     * <li><code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)</li>
-     * </ul>
-     *
-     * <p>For the latter, you may use {@link java.text.MessageFormat} patterns
-     * to customize formatting.
-     *
-     * @see java.text.MessageFormat
+     * @return  java.text.MessageFormat
      */
     String name() default DEFAULT_DISPLAY_NAME;
 
@@ -119,9 +106,9 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      * The display name to be used for individual repeated invocations of the
      * parameterized test; never blank.
      *
-     * @see java.text.MessageFormat
+     * @return java.text.MessageFormat
      */
-    String repeatedName() default  REPEATED_DISPLAY_NAME;
+    String repeatedName() default REPEATED_DISPLAY_NAME;
 
 
     /**
