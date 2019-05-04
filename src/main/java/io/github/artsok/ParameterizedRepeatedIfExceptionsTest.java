@@ -98,7 +98,7 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      * The display name to be used for individual invocations of the
      * parameterized test; never blank or consisting solely of whitespace.
      *
-     * @return  java.text.MessageFormat
+     * @return {@link String}
      */
     String name() default DEFAULT_DISPLAY_NAME;
 
@@ -106,7 +106,7 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      * The display name to be used for individual repeated invocations of the
      * parameterized test; never blank.
      *
-     * @return java.text.MessageFormat
+     * @return {@link String}
      */
     String repeatedName() default REPEATED_DISPLAY_NAME;
 
