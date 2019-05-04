@@ -1,11 +1,10 @@
 package io.github.artsok;
 
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.launcher.Launcher;
@@ -26,9 +25,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
+import org.junit.jupiter.params.provider.Arguments;
+
 
 
 /**
@@ -39,120 +39,123 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMetho
 public class ReRunnerTest {
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
-//    @ProgrammaticTest
-//    @RepeatedIfExceptionsTest(repeats = 2)
-//    public void runTest() {
-//        assertTrue(true, "No exception, repeat one time");
-//    }
-//
-//    @Test
-//    void runRunTest() throws Exception {
-//        assertTestResults("runTest", true, 1, 0, 0);
-//    }
-//
-//    /**
-//     * Repeated three times if test failed.
-//     * By default Exception.class will be handled in test
-//     */
-//    @ProgrammaticTest
-//    @RepeatedIfExceptionsTest(repeats = 3)
-//    public void reRunTest() throws IOException {
-//        throw new IOException("Error in Test");
-//    }
-//
-//    @Test
-//    void runReRunTest() throws Exception {
-//        assertTestResults("reRunTest", false, 3, 2, 0);
-//    }
-//
-//    /**
-//     * Repeated two times if test failed. Set IOException.class that will be handled in test
-//     *
-//     * @throws IOException - error if occurred
-//     */
-//    @ProgrammaticTest
-//    @RepeatedIfExceptionsTest(repeats = 2, exceptions = IOException.class)
-//    public void reRunTest2() throws IOException {
-//        throw new IOException("Exception in I/O operation");
-//    }
-//
-//    @ProgrammaticTest
-//    @RepeatedIfExceptionsTest(repeats = 2, exceptions = IOException.class)
-//    public void reRunTest34() throws IOException {
-//        throw new IOException("Exception in I/O operation");
-//    }
-//
-//    @Test
-//    void runReRun2Test() throws Exception {
-//        assertTestResults("reRunTest2", false, 2, 1, 0);
-//    }
-//
-//    /**
-//     * Repeated ten times if test failed. Set IOException.class that will be handled in test
-//     * Set formatter for test. Like behavior as at {@link org.junit.jupiter.api.RepeatedTest}
-//     *
-//     * @throws IOException - error if occurred
-//     */
-//    @ProgrammaticTest
-//    @RepeatedIfExceptionsTest(repeats = 10, exceptions = IOException.class,
-//            name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
-//    public void reRunTest3() throws IOException {
-//        throw new IOException("Exception in I/O operation");
-//    }
-//
-//    @Test
-//    void runReRun3Test() throws Exception {
-//        assertTestResults("reRunTest3", false, 10, 9, 0);
-//    }
-//
-//    @DisplayName("Name for our test")
-//    @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
-//            name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
-//    void reRunTest4() throws IOException {
-//        if (random.nextInt() % 2 == 0) { //Исключение бросается рандомно
-//            throw new RuntimeException("Error in Test");
-//        }
-//    }
-//
-//    /**
-//     * Repeated 100 times with minimum success four times, then disabled all remaining repeats.
-//     * See image below how it works. Default exception is Exception.class
-//     */
-//    @ProgrammaticTest
-//    @DisplayName("Test Case Name")
-//    @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
-//    public void reRunTest5() {
-//        if (random.nextInt() % 2 == 0) {
-//            throw new RuntimeException("Error in Test");
-//        }
-//    }
-//
-//    @ProgrammaticTest
-//    @DisplayName("Do not ultimately fail a test if there are still enough repetitions possible.")
-//    @RepeatedIfExceptionsTest(repeats = 2)
-//    public void reRunTest6() {
-//        throw new RuntimeException("Error in Test");
-//    }
-//
-//    @Test
-//    void runReRunTest6() throws Exception {
-//        assertTestResults("reRunTest6", false, 2, 1, 0);
-//    }
+    @ProgrammaticTest
+    @RepeatedIfExceptionsTest(repeats = 2)
+    public void runTest() {
+        assertTrue(true, "No exception, repeat one time");
+    }
 
-//    @ParameterizedTest
-//    @ValueSource(strings = { "racecar", "radar", "able was I ere I saw elba" })
-//    @DisplayName("Stop repetitions if 'minSuccess' cannot be reached anymore")
-//    @RepeatedIfExceptionsTest(repeats = 10, minSuccess = 4)
-//    public void reRunTest7() {
-//        throw new RuntimeException("Error in Test");
-//    }
+    @Test
+    void runRunTest() throws Exception {
+        assertTestResults("runTest", true, 1, 0, 0);
+    }
 
+    /**
+     * Repeated three times if test failed.
+     * By default Exception.class will be handled in test
+     */
+    @ProgrammaticTest
+    @RepeatedIfExceptionsTest(repeats = 3)
+    public void reRunTest() throws IOException {
+        throw new IOException("Error in Test");
+    }
 
-//    @ParameterizedTest
-//    @ValueSource(ints = { 1, 2, 3 })
-//    void testWithValueSource(int argument) {
-//        assertTrue(argument > 0 && argument < 4);
-//    }
+    @Test
+    void runReRunTest() throws Exception {
+        assertTestResults("reRunTest", false, 3, 2, 0);
+    }
+
+    /**
+     * Repeated two times if test failed. Set IOException.class that will be handled in test
+     *
+     * @throws IOException - error if occurred
+     */
+    @ProgrammaticTest
+    @RepeatedIfExceptionsTest(repeats = 2, exceptions = IOException.class)
+    public void reRunTest2() throws IOException {
+        throw new IOException("Exception in I/O operation");
+    }
+
+    @Test
+    void runReRun2Test() throws Exception {
+        assertTestResults("reRunTest2", false, 2, 1, 0);
+    }
+
+    /**
+     * Repeated ten times if test failed. Set IOException.class that will be handled in test
+     * Set formatter for test. Like behavior as at {@link org.junit.jupiter.api.RepeatedTest}
+     *
+     * @throws IOException - error if occurred
+     */
+    @ProgrammaticTest
+    @RepeatedIfExceptionsTest(repeats = 10, exceptions = IOException.class,
+            name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
+    public void reRunTest3() throws IOException {
+        throw new IOException("Exception in I/O operation");
+    }
+
+    @Test
+    void runReRun3Test() throws Exception {
+        assertTestResults("reRunTest3", false, 10, 9, 0);
+    }
+
+    @DisplayName("Name for our test")
+    @RepeatedIfExceptionsTest(repeats = 105, exceptions = RuntimeException.class,
+            name = "Rerun failed Test. Repetition {currentRepetition} of {totalRepetitions}")
+    void reRunTest4() throws IOException {
+        if (random.nextInt() % 2 == 0) { //Исключение бросается рандомно
+            throw new RuntimeException("Error in Test");
+        }
+    }
+
+    /**
+     * Repeated 100 times with minimum success four times, then disabled all remaining repeats.
+     * See image below how it works. Default exception is Exception.class
+     */
+    @ProgrammaticTest
+    @DisplayName("Test Case Name")
+    @RepeatedIfExceptionsTest(repeats = 100, minSuccess = 4)
+    public void reRunTest5() {
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException("Error in Test");
+        }
+    }
+
+    @ProgrammaticTest
+    @DisplayName("Do not ultimately fail a test if there are still enough repetitions possible.")
+    @RepeatedIfExceptionsTest(repeats = 2)
+    public void reRunTest6() {
+        throw new RuntimeException("Error in Test");
+    }
+
+    @Test
+    void runReRunTest6() throws Exception {
+        assertTestResults("reRunTest6", false, 2, 1, 0);
+    }
+
+    @ProgrammaticTest
+    @DisplayName("Stop repetitions if 'minSuccess' cannot be reached anymore")
+    @RepeatedIfExceptionsTest(repeats = 10, minSuccess = 4)
+    public void reRunTest7() {
+        throw new RuntimeException("Error in Test");
+    }
+
+    @Test
+    void runReRunTest7() throws Exception {
+        assertTestResults("reRunTest7", false, 7, 6, 3);
+    }
+
+    @ProgrammaticTest
+    @DisplayName("Ultimately fail a test as soon as an unrepeatable exception occurs.")
+    @RepeatedIfExceptionsTest(repeats = 2, exceptions = NumberFormatException.class)
+    public void reRunTest8() {
+        throw new RuntimeException("Error in Test");
+    }
+
+    @Test
+    void runReRunTest8() throws Exception {
+        assertTestResults("reRunTest8", false, 1, 0, 0);
+    }
 
     /**
      * By default total repeats = 1 and minimum success = 1.
@@ -160,6 +163,7 @@ public class ReRunnerTest {
      *
      * This example without exceptions.
      */
+    @Disabled
     @ParameterizedRepeatedIfExceptionsTest
     @ValueSource(ints = {14, 15, 100, -10})
     void successfulParameterizedTest(int argument) {
@@ -171,6 +175,7 @@ public class ReRunnerTest {
      * If the test failed by this way start to repeat it by one time with one minimum success.
      * This example with display name but without exceptions
      */
+    @Disabled
     @DisplayName("Example of parameterized repeated without exception")
     @ParameterizedRepeatedIfExceptionsTest
     @ValueSource(ints = {1, 2, 3, 1001})
@@ -184,6 +189,7 @@ public class ReRunnerTest {
      *
      * This example with display name but with exception. Exception depends on random number generation.
      */
+    @Disabled
     @DisplayName("Example of parameterized repeated with exception")
     @ParameterizedRepeatedIfExceptionsTest
     @ValueSource(strings = {"Hi", "Hello", "Bonjour", "Privet"})
@@ -200,6 +206,7 @@ public class ReRunnerTest {
      * This example with display name, repeated display name, 10 repeats and 2 minimum success with exceptions.
      * Exception depends on random number generation.
      */
+    @Disabled
     @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
             repeatedName = " (Repeat {currentRepetition} of {totalRepetitions})",
             repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
@@ -210,6 +217,14 @@ public class ReRunnerTest {
         }
     }
 
+    /**
+     * By default total repeats = 1 and minimum success = 1.
+     * If the test failed by this way start to repeat it by one time with one minimum success.
+     *
+     * This example with display name, implicitly repeated display name, 4 repeats and 2 minimum success with exceptions.
+     * Exception depends on random number generation. Also use {@link MethodSource}
+     */
+    @Disabled
     @DisplayName("Display name of container")
     @ParameterizedRepeatedIfExceptionsTest(name = "Year {0} is a leap year.",
             repeats = 4, exceptions = RuntimeException.class, minSuccess = 2)
@@ -230,19 +245,6 @@ public class ReRunnerTest {
         );
     }
 
-
-    @ProgrammaticTest
-    @DisplayName("Ultimately fail a test as soon as an unrepeatable exception occurs.")
-    @RepeatedIfExceptionsTest(repeats = 2, exceptions = NumberFormatException.class, minSuccess = 1)
-    public void reRunTest8() {
-        throw new RuntimeException("Error in Test");
-    }
-
-    //    @Test
-//    void runReRunTest8() throws Exception {
-//        assertTestResults("reRunTest8", false, 1, 0, 0);
-//    }
-//
     private void assertTestResults(String methodName, boolean successfulTestRun, int startedTests, int abortedTests,
                                    int skippedTests) throws Exception {
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
@@ -265,7 +267,6 @@ public class ReRunnerTest {
         assertEquals(skippedTests, listener.getSummary().getTestsSkippedCount(), "skipped test runs");
     }
 
-    //
     @Tag("programmatic-tests")
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
