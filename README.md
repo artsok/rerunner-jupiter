@@ -74,7 +74,8 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
                     throw new RuntimeException("Error in Test");
                 }
            }        
-      /**
+           
+          /**
            * By default total repeats = 1 and minimum success = 1.
            * If the test failed by this way start to repeat it by one time with one minimum success.
            *
