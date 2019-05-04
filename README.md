@@ -81,7 +81,6 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            *
            * This example without exceptions.
            */
-          @Disabled
           @ParameterizedRepeatedIfExceptionsTest
           @ValueSource(ints = {14, 15, 100, -10})
           void successfulParameterizedTest(int argument) {
@@ -93,7 +92,6 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            * If the test failed by this way start to repeat it by one time with one minimum success.
            * This example with display name but without exceptions
            */
-          @Disabled
           @DisplayName("Example of parameterized repeated without exception")
           @ParameterizedRepeatedIfExceptionsTest
           @ValueSource(ints = {1, 2, 3, 1001})
@@ -107,7 +105,6 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            *
            * This example with display name but with exception. Exception depends on random number generation.
            */
-          @Disabled
           @DisplayName("Example of parameterized repeated with exception")
           @ParameterizedRepeatedIfExceptionsTest
           @ValueSource(strings = {"Hi", "Hello", "Bonjour", "Privet"})
@@ -124,7 +121,6 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            * This example with display name, repeated display name, 10 repeats and 2 minimum success with exceptions.
            * Exception depends on random number generation.
            */
-          @Disabled
           @ParameterizedRepeatedIfExceptionsTest(name = "Argument was {0}",
                   repeatedName = " (Repeat {currentRepetition} of {totalRepetitions})",
                   repeats = 10, exceptions = RuntimeException.class, minSuccess = 2)
@@ -142,7 +138,6 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
            * This example with display name, implicitly repeated display name, 4 repeats and 2 minimum success with exceptions.
            * Exception depends on random number generation. Also use {@link MethodSource}
            */
-          @Disabled
           @DisplayName("Display name of container")
           @ParameterizedRepeatedIfExceptionsTest(name = "Year {0} is a leap year.",
                   repeats = 4, exceptions = RuntimeException.class, minSuccess = 2)
