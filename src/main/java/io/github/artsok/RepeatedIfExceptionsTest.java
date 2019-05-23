@@ -70,24 +70,37 @@ public @interface RepeatedIfExceptionsTest {
 
     /**
      * Pool of exceptions
+     *
      * @return Exception that handlered
      */
     Class<? extends Throwable>[] exceptions() default Throwable.class;
 
     /**
      * Number of repeats
+     *
      * @return N-times repeat test if it failed
      */
     int repeats() default 1;
 
     /**
      * Minimum success
+     *
      * @return After n-times of passed tests will disable all remaining repeats.
      */
     int minSuccess() default 1;
 
+
+    /**
+     * Add break (cooldown) to each tests.
+     * It matters, when you get some infrastructure problems and you want to run your tests through timeout.
+     *
+     * @return the length of time to sleep in milliseconds
+     */
+    long suspend() default 0L;
+
     /**
      * Display name for test method
+     *
      * @return Short name
      */
     String name() default SHORT_DISPLAY_NAME;
