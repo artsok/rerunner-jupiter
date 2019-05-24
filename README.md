@@ -157,6 +157,34 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
                       arguments("lemon", 2, Arrays.asList("x", "y"))
               );
           }
+          
+          
+          /**
+          *  it's often caused by some infrastructure problems: network congestion, garbage collection etc. 
+          *  These problems usually pass after some time. Use suspend option
+          */
+          @RepeatedIfExceptionsTest(repeats = 3, exceptions = IOException.class, suspend = 5000L)
+              void reRunTestWithSuspendOption() throws IOException {
+                  throw new IOException("Exception in I/O operation");
+              }
+          
+          
+              /**
+               * Example with suspend option for Parameterized Test
+               * It matters, when you get some infrastructure problems and you want to run your tests through timeout.
+               *
+               * Set break to 5 seconds. If exception appeared for any arguments, repeating extension would runs tests with break.
+               * If one result failed and other passed, does not matter we would wait 5 seconds throught each arguments of the repeated tests.
+               *
+               */
+              @DisplayName("Example of parameterized repeated with exception")
+              @ParameterizedRepeatedIfExceptionsTest(suspend = 5000L, minSuccess = 2, repeats = 3)
+              @ValueSource(strings = {"Hi", "Hello", "Bonjour", "Privet"})
+              void errorParameterizedTestWithSuspendOption(String argument) {
+                  if (random.nextInt() % 2 == 0) {
+                      throw new RuntimeException(argument);
+                  }
+              }
 ```
 More examples you can find [here].
 

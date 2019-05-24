@@ -250,7 +250,7 @@ public class ReRunnerTest {
      * It matters, when you get some infrastructure problems and you want to run your tests through timeout.
      *
      * Set break to 5 seconds. If exception appeared for any arguments, repeating extension would runs tests with break.
-     * If one result failed and other passed, "все равно" we would wait 5 seconds throught each arguments of the repeated tests.
+     * If one result failed and other passed, does not matter we would wait 5 seconds throught each arguments of the repeated tests.
      *
      */
     @Disabled
