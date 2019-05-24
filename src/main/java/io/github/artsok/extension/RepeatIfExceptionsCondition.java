@@ -18,23 +18,12 @@ package io.github.artsok.extension;
 
 
 import io.github.artsok.RepeatedIfExceptionsTest;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
 import org.opentest4j.TestAbortedException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,6 +49,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private boolean repeatableExceptionAppeared = false;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
     private List<Boolean> historyExceptionAppear;
+    private long suspend = 0L;
 
     /**
      * Check that test method contain {@link RepeatedIfExceptionsTest} annotation
@@ -90,14 +80,13 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         totalRepeats = annotationParams.repeats();
         minSuccess = annotationParams.minSuccess();
+        suspend = annotationParams.suspend();
         historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
+
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
 
         String displayName = extensionContext.getDisplayName();
-
-
-
         formatter = displayNameFormatter(annotationParams, displayName);
 
         //Convert logic of repeated handler to spliterator
@@ -191,7 +180,17 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
 
         @Override
         public TestTemplateInvocationContext next() {
+            //Would wait if exception appeared
+            if (historyExceptionAppear.stream().anyMatch(ex -> ex)) {
+                try {
+                    Thread.sleep(suspend);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
             int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
+
             if (hasNext()) {
                 currentIndex++;
                 return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats,
