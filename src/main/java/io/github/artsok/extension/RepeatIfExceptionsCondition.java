@@ -109,7 +109,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      * Check if exceptions that will appear in test same as we wait
      *
      * @param extensionContext - Test Class Context
-     * @throws Exception - error if occurred
      */
     @Override
     public void afterTestExecution(ExtensionContext extensionContext) {
