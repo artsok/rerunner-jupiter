@@ -159,7 +159,7 @@ public class ReRunnerTest {
 
     @Disabled
     @RepeatedIfExceptionsTest(repeats = 3, exceptions = IOException.class, suspend = 5000L)
-    public void reRunTestWithSuspendOption() throws IOException {
+    void reRunTestWithSuspendOption() throws IOException {
         throw new IOException("Exception in I/O operation");
     }
 
@@ -243,6 +243,26 @@ public class ReRunnerTest {
             throw new RuntimeException("Exception in Test");
         }
     }
+
+
+    /**
+     * Example with suspend option for Parameterized Test
+     * It matters, when you get some infrastructure problems and you want to run your tests through timeout.
+     *
+     * Set break to 5 seconds. If exception appeared for any arguments, repeating extension would runs tests with break.
+     * If one result failed and other passed, "все равно" we would wait 5 seconds throught each arguments of the repeated tests.
+     *
+     */
+    @Disabled
+    @DisplayName("Example of parameterized repeated with exception")
+    @ParameterizedRepeatedIfExceptionsTest(suspend = 5000L, minSuccess = 2, repeats = 3)
+    @ValueSource(strings = {"Hi", "Hello", "Bonjour", "Privet"})
+    void errorParameterizedTestWithSuspendOption(String argument) {
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException(argument);
+        }
+    }
+
 
     static Stream<Arguments> stringIntAndListProvider() {
         return Stream.of(
