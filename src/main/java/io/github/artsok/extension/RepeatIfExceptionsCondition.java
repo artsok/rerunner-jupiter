@@ -96,7 +96,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     }
 
     @Override
-    public void beforeTestExecution(ExtensionContext context) throws Exception {
+    public void beforeTestExecution(ExtensionContext context)  {
         repeatableExceptions = Stream.of(context.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
@@ -112,7 +112,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
      * @throws Exception - error if occurred
      */
     @Override
-    public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
+    public void afterTestExecution(ExtensionContext extensionContext) {
         boolean exceptionAppeared = exceptionAppeared(extensionContext);
         historyExceptionAppear.add(exceptionAppeared);
     }

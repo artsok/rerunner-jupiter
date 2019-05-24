@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.launcher.Launcher;
@@ -27,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
-import org.junit.jupiter.params.provider.Arguments;
 
 
 
@@ -71,7 +71,7 @@ public class ReRunnerTest {
      * @throws IOException - error if occurred
      */
     @ProgrammaticTest
-    @RepeatedIfExceptionsTest(repeats = 2, exceptions = IOException.class)
+    @RepeatedIfExceptionsTest(repeats = 3, exceptions = IOException.class)
     public void reRunTest2() throws IOException {
         throw new IOException("Exception in I/O operation");
     }
@@ -155,6 +155,12 @@ public class ReRunnerTest {
     @Test
     void runReRunTest8() throws Exception {
         assertTestResults("reRunTest8", false, 1, 0, 0);
+    }
+
+    @Disabled
+    @RepeatedIfExceptionsTest(repeats = 3, exceptions = IOException.class, suspend = 5000L)
+    public void reRunTestWithSuspendOption() throws IOException {
+        throw new IOException("Exception in I/O operation");
     }
 
     /**
