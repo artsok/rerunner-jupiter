@@ -71,7 +71,7 @@ public class ReRunnerTest {
      * @throws IOException - error if occurred
      */
     @ProgrammaticTest
-    @RepeatedIfExceptionsTest(repeats = 3, exceptions = IOException.class)
+    @RepeatedIfExceptionsTest(repeats = 2, exceptions = IOException.class)
     public void reRunTest2() throws IOException {
         throw new IOException("Exception in I/O operation");
     }
