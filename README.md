@@ -16,7 +16,7 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
 <dependency>
     <groupId>io.github.artsok</groupId>
     <artifactId>rerunner-jupiter</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
     <scope>test</scope>
 </dependency>
 ```
