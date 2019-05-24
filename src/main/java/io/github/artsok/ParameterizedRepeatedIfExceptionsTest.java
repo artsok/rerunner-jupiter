@@ -131,4 +131,12 @@ public @interface ParameterizedRepeatedIfExceptionsTest {
      * @return After n-times of passed tests will disable all remaining repeats.
      */
     int minSuccess() default 1;
+
+    /**
+     * Add break (cooldown) to each tests.
+     * It matters, when you get some infrastructure problems and you want to run your tests through timeout.
+     *
+     * @return the length of time to sleep in milliseconds
+     */
+    long suspend() default 0L;
 }

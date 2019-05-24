@@ -36,6 +36,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     private boolean repeatableExceptionAppeared = false;
     private final List<Boolean> historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
     private static final String METHOD_CONTEXT_KEY = "context";
+    private long suspend = 0L;
 
     @Override
     public boolean supportsTestTemplate(ExtensionContext extensionContext) {
@@ -76,6 +77,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
         totalRepeats = annotationParams.repeats();
         minSuccess = annotationParams.minSuccess();
+        suspend = annotationParams.suspend();
 
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
@@ -216,14 +218,24 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
             if (hasNext()) {
                 int currentParam = paramsCount.intValue();
-                int errorTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
-                int successfulTestRepetitionsCountForOneParameter = toIntExact(historyExceptionAppear
+                int errorTestRepetitionsCountForOneArgument = toIntExact(historyExceptionAppear.stream().filter(b -> b).count());
+                int successfulTestRepetitionsCountForOneArgument = toIntExact(historyExceptionAppear
                         .stream()
                         .skip(historyExceptionAppear.size() - minSuccess <= 0 ? 0 : historyExceptionAppear.size() - minSuccess)
                         .filter(b -> !b)
                         .count());
 
-                if (errorTestRepetitionsCountForOneParameter >= 1 && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneParameter != minSuccess) {
+                if (errorTestRepetitionsCountForOneArgument >= 1 && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneArgument != minSuccess) {
+
+                    //If exception appeared would wait suspend time
+                    if (historyExceptionAppear.stream().anyMatch(ex -> ex)) {
+                        try {
+                            Thread.sleep(suspend);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+
                     currentIndex++;
                     repeatableExceptionAppeared = false;
                     return new ParameterizedTestInvocationContext(currentIndex, totalRepeats, formatter, methodContext, params.get(currentParam - 1));

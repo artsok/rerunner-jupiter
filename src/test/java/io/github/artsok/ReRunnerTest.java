@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.launcher.Launcher;
@@ -27,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
-import org.junit.jupiter.params.provider.Arguments;
 
 
 
@@ -157,6 +157,12 @@ public class ReRunnerTest {
         assertTestResults("reRunTest8", false, 1, 0, 0);
     }
 
+    @Disabled
+    @RepeatedIfExceptionsTest(repeats = 3, exceptions = IOException.class, suspend = 5000L)
+    void reRunTestWithSuspendOption() throws IOException {
+        throw new IOException("Exception in I/O operation");
+    }
+
     /**
      * By default total repeats = 1 and minimum success = 1.
      * If the test failed by this way start to repeat it by one time with one minimum success.
@@ -237,6 +243,26 @@ public class ReRunnerTest {
             throw new RuntimeException("Exception in Test");
         }
     }
+
+
+    /**
+     * Example with suspend option for Parameterized Test
+     * It matters, when you get some infrastructure problems and you want to run your tests through timeout.
+     *
+     * Set break to 5 seconds. If exception appeared for any arguments, repeating extension would runs tests with break.
+     * If one result failed and other passed, "все равно" we would wait 5 seconds throught each arguments of the repeated tests.
+     *
+     */
+    @Disabled
+    @DisplayName("Example of parameterized repeated with exception")
+    @ParameterizedRepeatedIfExceptionsTest(suspend = 5000L, minSuccess = 2, repeats = 3)
+    @ValueSource(strings = {"Hi", "Hello", "Bonjour", "Privet"})
+    void errorParameterizedTestWithSuspendOption(String argument) {
+        if (random.nextInt() % 2 == 0) {
+            throw new RuntimeException(argument);
+        }
+    }
+
 
     static Stream<Arguments> stringIntAndListProvider() {
         return Stream.of(
