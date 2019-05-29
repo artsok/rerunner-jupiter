@@ -180,7 +180,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         @Override
         public TestTemplateInvocationContext next() {
             //If exception appeared would wait suspend time
-            if (historyExceptionAppear.stream().anyMatch(ex -> ex)) {
+            if (historyExceptionAppear.stream().anyMatch(ex -> ex) && suspend != 0L) {
                 try {
                     Thread.sleep(suspend);
                 } catch (InterruptedException e) {

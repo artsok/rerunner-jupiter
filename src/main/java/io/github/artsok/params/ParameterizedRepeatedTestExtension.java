@@ -228,7 +228,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 if (errorTestRepetitionsCountForOneArgument >= 1 && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneArgument != minSuccess) {
 
                     //If exception appeared would wait suspend time
-                    if (historyExceptionAppear.stream().anyMatch(ex -> ex)) {
+                    if (historyExceptionAppear.stream().anyMatch(ex -> ex) && suspend != 0L) {
                         try {
                             Thread.sleep(suspend);
                         } catch (InterruptedException e) {
