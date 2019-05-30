@@ -45,8 +45,7 @@ class ParameterizedTestInvocationContext implements TestTemplateInvocationContex
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments)
-        );
+        return singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments));
     }
 }
 

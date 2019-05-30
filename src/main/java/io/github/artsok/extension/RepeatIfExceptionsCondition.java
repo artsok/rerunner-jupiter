@@ -174,7 +174,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
             if (currentIndex == 0) {
                 return true;
             }
-            return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
+            return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex <= totalRepeats;
         }
 
         @Override
@@ -189,7 +189,6 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
             }
 
             int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
-
             if (hasNext()) {
                 currentIndex++;
                 return new RepeatedIfExceptionsInvocationContext(currentIndex, totalRepeats,

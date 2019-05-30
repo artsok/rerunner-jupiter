@@ -16,7 +16,6 @@
  */
 package io.github.artsok.extension;
 
-
 import io.github.artsok.RepeatedIfExceptionsTest;
 
 /**
@@ -29,16 +28,20 @@ class RepeatedIfExceptionsDisplayNameFormatter {
     private final String pattern;
     private final String displayName;
 
-    RepeatedIfExceptionsDisplayNameFormatter(String pattern, String displayName) {
+    RepeatedIfExceptionsDisplayNameFormatter(final String pattern, final String displayName) {
         this.pattern = pattern;
         this.displayName = displayName;
     }
 
-    String format(int currentRepetition, int totalRepetitions) {
-        return this.pattern
-                .replace(RepeatedIfExceptionsTest.DISPLAY_NAME_PLACEHOLDER, this.displayName)
-                .replace(RepeatedIfExceptionsTest.CURRENT_REPETITION_PLACEHOLDER, String.valueOf(currentRepetition))
-                .replace(RepeatedIfExceptionsTest.TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions));
+    String format(final int currentRepetition, final int totalRepetitions) {
+        if (currentRepetition > 1 && totalRepetitions > 0) {
+            final String p = pattern
+                    .replace(RepeatedIfExceptionsTest.CURRENT_REPETITION_PLACEHOLDER, String.valueOf(currentRepetition - 1)) //Minus, because first run doesn't mean repetition
+                    .replace(RepeatedIfExceptionsTest.TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions));
+            return this.displayName.concat(p);
+        } else {
+            return this.displayName;
+        }
     }
 
 }
