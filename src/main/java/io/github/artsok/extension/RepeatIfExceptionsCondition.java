@@ -159,7 +159,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
         return repeatableExceptions.stream().noneMatch(ex -> ex.isAssignableFrom(appearedException.getClass()));
     }
 
-    private boolean isMinSuccessTargetStillReachable(long minSuccessCount) {
+    private boolean isMinSuccessTargetStillReachable(final long minSuccessCount) {
         return historyExceptionAppear.stream().filter(bool -> bool).count() < totalRepeats - minSuccessCount;
     }
 
