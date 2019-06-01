@@ -81,7 +81,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
         this.totalRepetitions = totalRepetitions;
         this.minSuccess = minSuccess;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
-        this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount - 1;
+        this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount -2;
         this.repeatableExceptionAppeared = repeatableExceptionAppeared;
     }
 
@@ -94,6 +94,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
         } else {
             return ConditionEvaluationResult.enabled("Repeat the tests");
         }
+
     }
 
     private boolean testUltimatelyFailed() {
@@ -105,7 +106,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
     }
 
     private boolean minimalRequiredSuccessfulRunsCannotBeReachedAnymore() {
-        return totalRepetitions - failedTestRepetitionsCount < minSuccess;
+        return totalRepetitions  - failedTestRepetitionsCount < minSuccess;
     }
 
     private boolean testUltimatelyPassed() {
