@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -263,6 +265,20 @@ public class ReRunnerTest {
         }
     }
 
+    /**
+     * Parameterized Test with the wrong exception.
+     * Test throws AssertionError.class, but we wait for Exception.class.
+     * In this case test with argument "1" runs ones without repeats.
+     *
+     * If you change exceptions = AssertionError.class, repeats will appear.
+     *
+     */
+    @Disabled
+    @ValueSource(ints = {1, 2})
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 2, exceptions = Exception.class)
+    void testParameterizedRepeaterAssertionsFailure(int value) {
+        assertThat(value, equalTo(2));
+    }
 
     static Stream<Arguments> stringIntAndListProvider() {
         return Stream.of(

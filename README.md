@@ -185,6 +185,19 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
                     throw new RuntimeException(argument);
                 }
            }
+           
+           /**
+           * Parameterized Test with the wrong exception.
+           * Test throws AssertionError.class, but we wait for Exception.class.
+           * In this case test with argument "1" runs ones without repeats.
+           * 
+           * If you change 'exceptions = AssertionError.class', repeats will appear.
+           */
+           @ValueSource(ints = {1, 2})
+           @ParameterizedRepeatedIfExceptionsTest(repeats = 2, exceptions = Exception.class)
+           void testParameterizedRepeaterAssertionsFailure(int value) {
+                assertThat(value, equalTo(2));
+           }
 ```
 More examples you can find [here].
 
