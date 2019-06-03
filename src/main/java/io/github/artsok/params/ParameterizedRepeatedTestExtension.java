@@ -126,8 +126,15 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+        if (appearedExceptionDoesNotAllowRepetitions(throwable)) {
+            throw throwable;
+        }
         repeatableExceptionAppeared = true;
         throw throwable;
+    }
+
+    private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
+        return repeatableExceptions.stream().noneMatch(ex -> ex.isAssignableFrom(appearedException.getClass()));
     }
 
     private ParameterizedRepeatedIfExceptionsTestNameFormatter createNameFormatter(Method templateMethod, String displayName) {
