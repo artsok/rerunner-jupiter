@@ -13,9 +13,8 @@ package io.github.artsok.internal;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
+import java.util.Collections;
 import java.util.List;
-
-import static java.util.Collections.singletonList;
 
 /**
  * @since 5.0 - COPY PAST FROM ORIGINAL JUNIT 5 WITH SEVERAL CORRECTIONS
@@ -25,12 +24,13 @@ public class ParameterizedTestInvocationContext implements TestTemplateInvocatio
     private final int currentRepetition;
     private final int totalRepetitions;
 
+
     private final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter;
     private final ParameterizedRepeatedMethodContext methodContext;
     private final Object[] arguments;
 
     public ParameterizedTestInvocationContext(int currentRepetition, int totalRepetitions, ParameterizedRepeatedIfExceptionsTestNameFormatter formatter,
-                                       ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
+                                              ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
         this.currentRepetition = currentRepetition;
         this.totalRepetitions = totalRepetitions;
         this.formatter = formatter;
@@ -45,7 +45,7 @@ public class ParameterizedTestInvocationContext implements TestTemplateInvocatio
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments));
+        return Collections.singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments));
     }
 }
 
