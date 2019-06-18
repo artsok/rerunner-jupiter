@@ -221,5 +221,4 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
             throw new UnsupportedOperationException();
         }
     }
-
 }
