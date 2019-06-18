@@ -1,13 +1,4 @@
-package io.github.artsok.params;
-
-import static io.github.artsok.params.ParameterizedRepeatedMethodContext.ResolverType.AGGREGATOR;
-import static io.github.artsok.params.ParameterizedRepeatedMethodContext.ResolverType.CONVERTER;
-import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
+package io.github.artsok.internal;
 
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -24,18 +15,27 @@ import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.commons.util.StringUtils;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.github.artsok.internal.ParameterizedRepeatedMethodContext.ResolverType.AGGREGATOR;
+import static io.github.artsok.internal.ParameterizedRepeatedMethodContext.ResolverType.CONVERTER;
+import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
+
 /**
  * Encapsulates access to the parameters of a parameterized test method and
  * caches the converters and aggregators used to resolve them.
  *
  * @since 5.3 - FULL COPY PAST FROM ORIGINAL JUNIT 5
  */
-class ParameterizedRepeatedMethodContext {
+public class ParameterizedRepeatedMethodContext {
 
     private final List<ParameterizedRepeatedMethodContext.ResolverType> resolverTypes;
     private final ParameterizedRepeatedMethodContext.Resolver[] resolvers;
 
-    ParameterizedRepeatedMethodContext(Method testMethod) {
+    public ParameterizedRepeatedMethodContext(Method testMethod) {
         Parameter[] parameters = testMethod.getParameters();
         this.resolverTypes = new ArrayList<>(parameters.length);
         this.resolvers = new ParameterizedRepeatedMethodContext.Resolver[parameters.length];
@@ -72,7 +72,7 @@ class ParameterizedRepeatedMethodContext {
      *
      * @return {@code true} if the method has a potentially valid signature
      */
-    boolean hasPotentiallyValidSignature() {
+    public boolean hasPotentiallyValidSignature() {
         int indexOfPreviousAggregator = -1;
         for (int i = 0; i < getParameterCount(); i++) {
             if (isAggregator(i)) {
@@ -89,7 +89,7 @@ class ParameterizedRepeatedMethodContext {
      * Get the number of parameters of the {@link Method} represented by this
      * context.
      */
-    int getParameterCount() {
+    public int getParameterCount() {
         return resolvers.length;
     }
 
@@ -100,7 +100,7 @@ class ParameterizedRepeatedMethodContext {
      *
      * @return {@code true} if the method has an aggregator
      */
-    boolean hasAggregator() {
+    public boolean hasAggregator() {
         return resolverTypes.contains(AGGREGATOR);
     }
 

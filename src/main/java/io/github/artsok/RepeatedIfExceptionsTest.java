@@ -16,7 +16,7 @@
  */
 package io.github.artsok;
 
-import io.github.artsok.extension.RepeatIfExceptionsCondition;
+import io.github.artsok.extension.RepeatIfExceptionsExtension;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @TestTemplate
-@ExtendWith(RepeatIfExceptionsCondition.class)
+@ExtendWith(RepeatIfExceptionsExtension.class)
 public @interface RepeatedIfExceptionsTest {
 
     /**
@@ -58,7 +58,7 @@ public @interface RepeatedIfExceptionsTest {
      * @see #TOTAL_REPETITIONS_PLACEHOLDER
      * @see #LONG_DISPLAY_NAME
      */
-    String SHORT_DISPLAY_NAME = "Repetition if test failed " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER;
+    String SHORT_DISPLAY_NAME = ". Repetition " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER;
 
     /**
      * <em>Long</em> display name pattern for a repeated test: {@value #LONG_DISPLAY_NAME}

@@ -1,4 +1,4 @@
-package io.github.artsok.params;
+package io.github.artsok.internal;
 
 import org.junit.platform.commons.JUnitException;
 import org.junit.platform.commons.util.StringUtils;
@@ -16,13 +16,13 @@ import static io.github.artsok.ParameterizedRepeatedIfExceptionsTest.TOTAL_REPET
 import static java.util.stream.Collectors.joining;
 
 
-class ParameterizedRepeatedIfExceptionsTestNameFormatter {
+public class ParameterizedRepeatedIfExceptionsTestNameFormatter {
 
     private final String pattern;
     private final String displayName;
     private final String repeatedNamePattern;
 
-    ParameterizedRepeatedIfExceptionsTestNameFormatter(String pattern, String displayName, String repeatedNamePattern) {
+    public ParameterizedRepeatedIfExceptionsTestNameFormatter(String pattern, String displayName, String repeatedNamePattern) {
         this.pattern = pattern;
         this.displayName = displayName;
         this.repeatedNamePattern = repeatedNamePattern;

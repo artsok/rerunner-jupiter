@@ -8,29 +8,29 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package io.github.artsok.params;
+package io.github.artsok.internal;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
+import java.util.Collections;
 import java.util.List;
-
-import static java.util.Collections.singletonList;
 
 /**
  * @since 5.0 - COPY PAST FROM ORIGINAL JUNIT 5 WITH SEVERAL CORRECTIONS
  */
-class ParameterizedTestInvocationContext implements TestTemplateInvocationContext {
+public class ParameterizedTestInvocationContext implements TestTemplateInvocationContext {
 
     private final int currentRepetition;
     private final int totalRepetitions;
+
 
     private final ParameterizedRepeatedIfExceptionsTestNameFormatter formatter;
     private final ParameterizedRepeatedMethodContext methodContext;
     private final Object[] arguments;
 
-    ParameterizedTestInvocationContext(int currentRepetition, int totalRepetitions, ParameterizedRepeatedIfExceptionsTestNameFormatter formatter,
-                                       ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
+    public ParameterizedTestInvocationContext(int currentRepetition, int totalRepetitions, ParameterizedRepeatedIfExceptionsTestNameFormatter formatter,
+                                              ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
         this.currentRepetition = currentRepetition;
         this.totalRepetitions = totalRepetitions;
         this.formatter = formatter;
@@ -45,8 +45,7 @@ class ParameterizedTestInvocationContext implements TestTemplateInvocationContex
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments)
-        );
+        return Collections.singletonList(new ParameterizedTestParameterResolver(this.methodContext, this.arguments));
     }
 }
 

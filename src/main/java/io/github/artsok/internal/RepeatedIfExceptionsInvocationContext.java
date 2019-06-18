@@ -14,12 +14,9 @@
  * limitations under the License.
  *
  */
-package io.github.artsok.extension;
+package io.github.artsok.internal;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.Extension;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
 import java.util.List;
@@ -35,17 +32,17 @@ import static java.util.Collections.singletonList;
 public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvocationContext {
 
     private final int currentRepetition;
-    private final int totalRepetitions;
+    private final int totalTestRuns;
     private final int successfulTestRepetitionsCount;
     private final int minSuccess;
     private final boolean repeatableExceptionAppeared;
     private final RepeatedIfExceptionsDisplayNameFormatter formatter;
 
-    RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, int successfulTestRepetitionsCount,
+    public RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, int successfulTestRepetitionsCount,
                                           int minSuccess, boolean repeatableExceptionAppeared,
                                           RepeatedIfExceptionsDisplayNameFormatter formatter) {
         this.currentRepetition = currentRepetition;
-        this.totalRepetitions = totalRepetitions;
+        this.totalTestRuns = totalRepetitions;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
         this.minSuccess = minSuccess;
         this.repeatableExceptionAppeared = repeatableExceptionAppeared;
@@ -54,12 +51,12 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 
     @Override
     public String getDisplayName(int invocationIndex) {
-        return this.formatter.format(this.currentRepetition, this.totalRepetitions);
+        return this.formatter.format(this.currentRepetition, this.totalTestRuns);
     }
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return singletonList(new RepeatExecutionCondition(currentRepetition, totalRepetitions, minSuccess,
+        return singletonList(new RepeatExecutionCondition(currentRepetition, totalTestRuns, minSuccess,
                 successfulTestRepetitionsCount, repeatableExceptionAppeared));
     }
 }
@@ -70,7 +67,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
  * With one method in this interface, we can control of on/off executing test
  */
 class RepeatExecutionCondition implements ExecutionCondition {
-    private final int totalRepetitions;
+    private final int totalTestRuns;
     private final int minSuccess;
     private final int successfulTestRepetitionsCount;
     private final int failedTestRepetitionsCount;
@@ -78,7 +75,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
 
     RepeatExecutionCondition(int currentRepetition, int totalRepetitions, int minSuccess,
                              int successfulTestRepetitionsCount, boolean repeatableExceptionAppeared) {
-        this.totalRepetitions = totalRepetitions;
+        this.totalTestRuns = totalRepetitions;
         this.minSuccess = minSuccess;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
         this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount - 1;
@@ -94,6 +91,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
         } else {
             return ConditionEvaluationResult.enabled("Repeat the tests");
         }
+
     }
 
     private boolean testUltimatelyFailed() {
@@ -105,7 +103,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
     }
 
     private boolean minimalRequiredSuccessfulRunsCannotBeReachedAnymore() {
-        return totalRepetitions - failedTestRepetitionsCount < minSuccess;
+        return totalTestRuns - failedTestRepetitionsCount < minSuccess;
     }
 
     private boolean testUltimatelyPassed() {

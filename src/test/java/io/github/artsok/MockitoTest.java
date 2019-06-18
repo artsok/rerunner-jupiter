@@ -1,7 +1,7 @@
 package io.github.artsok;
 
-import io.github.artsok.extension.RepeatedIfException;
-import io.github.artsok.extension.RepeatedIfExceptionsInvocationContext;
+import io.github.artsok.internal.RepeatedIfException;
+import io.github.artsok.internal.RepeatedIfExceptionsInvocationContext;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

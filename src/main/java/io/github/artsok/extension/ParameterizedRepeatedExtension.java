@@ -1,7 +1,10 @@
-package io.github.artsok.params;
+package io.github.artsok.extension;
 
 import io.github.artsok.ParameterizedRepeatedIfExceptionsTest;
-import io.github.artsok.extension.RepeatedIfException;
+import io.github.artsok.internal.RepeatedIfException;
+import io.github.artsok.internal.ParameterizedRepeatedIfExceptionsTestNameFormatter;
+import io.github.artsok.internal.ParameterizedRepeatedMethodContext;
+import io.github.artsok.internal.ParameterizedTestInvocationContext;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -27,7 +30,7 @@ import static org.junit.platform.commons.util.AnnotationUtils.*;
 /**
  * Extension for {@link ParameterizedRepeatedIfExceptionsTest}
  */
-public class ParameterizedRepeatedTestExtension implements TestTemplateInvocationContextProvider,
+public class ParameterizedRepeatedExtension implements TestTemplateInvocationContextProvider,
         BeforeTestExecutionCallback, AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
     private int totalRepeats = 0;
@@ -181,7 +184,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
     }
 
     private ExtensionContext.Store getStore(ExtensionContext context) {
-        return context.getStore(ExtensionContext.Namespace.create(ParameterizedRepeatedTestExtension.class, context.getRequiredTestMethod()));
+        return context.getStore(ExtensionContext.Namespace.create(ParameterizedRepeatedExtension.class, context.getRequiredTestMethod()));
     }
 
     /**
@@ -235,7 +238,7 @@ public class ParameterizedRepeatedTestExtension implements TestTemplateInvocatio
                 if (errorTestRepetitionsCountForOneArgument >= 1 && currentIndex < totalRepeats && successfulTestRepetitionsCountForOneArgument != minSuccess) {
 
                     //If exception appeared would wait suspend time
-                    if (historyExceptionAppear.stream().anyMatch(ex -> ex)) {
+                    if (historyExceptionAppear.stream().anyMatch(ex -> ex) && suspend != 0L) {
                         try {
                             Thread.sleep(suspend);
                         } catch (InterruptedException e) {
