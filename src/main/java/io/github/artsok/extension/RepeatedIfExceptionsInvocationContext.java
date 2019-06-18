@@ -35,7 +35,7 @@ import static java.util.Collections.singletonList;
 public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvocationContext {
 
     private final int currentRepetition;
-    private final int totalRepetitions;
+    private final int totalTestRuns;
     private final int successfulTestRepetitionsCount;
     private final int minSuccess;
     private final boolean repeatableExceptionAppeared;
@@ -45,7 +45,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
                                           int minSuccess, boolean repeatableExceptionAppeared,
                                           RepeatedIfExceptionsDisplayNameFormatter formatter) {
         this.currentRepetition = currentRepetition;
-        this.totalRepetitions = totalRepetitions;
+        this.totalTestRuns = totalRepetitions;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
         this.minSuccess = minSuccess;
         this.repeatableExceptionAppeared = repeatableExceptionAppeared;
@@ -54,12 +54,12 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
 
     @Override
     public String getDisplayName(int invocationIndex) {
-        return this.formatter.format(this.currentRepetition, this.totalRepetitions);
+        return this.formatter.format(this.currentRepetition, this.totalTestRuns);
     }
 
     @Override
     public List<Extension> getAdditionalExtensions() {
-        return singletonList(new RepeatExecutionCondition(currentRepetition, totalRepetitions, minSuccess,
+        return singletonList(new RepeatExecutionCondition(currentRepetition, totalTestRuns, minSuccess,
                 successfulTestRepetitionsCount, repeatableExceptionAppeared));
     }
 }
@@ -70,7 +70,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
  * With one method in this interface, we can control of on/off executing test
  */
 class RepeatExecutionCondition implements ExecutionCondition {
-    private final int totalRepetitions;
+    private final int totalTestRuns;
     private final int minSuccess;
     private final int successfulTestRepetitionsCount;
     private final int failedTestRepetitionsCount;
@@ -78,10 +78,10 @@ class RepeatExecutionCondition implements ExecutionCondition {
 
     RepeatExecutionCondition(int currentRepetition, int totalRepetitions, int minSuccess,
                              int successfulTestRepetitionsCount, boolean repeatableExceptionAppeared) {
-        this.totalRepetitions = totalRepetitions;
+        this.totalTestRuns = totalRepetitions;
         this.minSuccess = minSuccess;
         this.successfulTestRepetitionsCount = successfulTestRepetitionsCount;
-        this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount -2;
+        this.failedTestRepetitionsCount = currentRepetition - successfulTestRepetitionsCount - 1;
         this.repeatableExceptionAppeared = repeatableExceptionAppeared;
     }
 
@@ -106,7 +106,7 @@ class RepeatExecutionCondition implements ExecutionCondition {
     }
 
     private boolean minimalRequiredSuccessfulRunsCannotBeReachedAnymore() {
-        return totalRepetitions  - failedTestRepetitionsCount < minSuccess;
+        return totalTestRuns - failedTestRepetitionsCount < minSuccess;
     }
 
     private boolean testUltimatelyPassed() {
