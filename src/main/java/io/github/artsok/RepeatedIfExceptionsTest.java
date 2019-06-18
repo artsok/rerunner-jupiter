@@ -58,7 +58,7 @@ public @interface RepeatedIfExceptionsTest {
      * @see #TOTAL_REPETITIONS_PLACEHOLDER
      * @see #LONG_DISPLAY_NAME
      */
-    String SHORT_DISPLAY_NAME = " Repetition " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER;
+    String SHORT_DISPLAY_NAME = "Repetition " + CURRENT_REPETITION_PLACEHOLDER + " of " + TOTAL_REPETITIONS_PLACEHOLDER;
 
     /**
      * <em>Long</em> display name pattern for a repeated test: {@value #LONG_DISPLAY_NAME}
