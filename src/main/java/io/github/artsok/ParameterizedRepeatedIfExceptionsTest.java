@@ -1,6 +1,6 @@
 package io.github.artsok;
 
-import io.github.artsok.params.ParameterizedRepeatedTestExtension;
+import io.github.artsok.extension.ParameterizedRepeatedExtension;
 import org.apiguardian.api.API;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,14 +16,14 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  * Annotation which you can put to parameterized test method.
  * Customize the number of repeats and set for what exception you want handled.
  * By default set Throwable.class.
- * All logic of this extension at {@link ParameterizedRepeatedTestExtension}
+ * All logic of this extension at {@link ParameterizedRepeatedExtension}
  *
  * @author Artem Sokovets
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @TestTemplate
-@ExtendWith(ParameterizedRepeatedTestExtension.class)
+@ExtendWith(ParameterizedRepeatedExtension.class)
 public @interface ParameterizedRepeatedIfExceptionsTest {
 
     /**

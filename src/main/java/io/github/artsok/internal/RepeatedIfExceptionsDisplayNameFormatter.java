@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package io.github.artsok.extension;
+package io.github.artsok.internal;
 
 import io.github.artsok.RepeatedIfExceptionsTest;
 
@@ -23,12 +23,12 @@ import io.github.artsok.RepeatedIfExceptionsTest;
  *
  * @author Artem Sokovets
  */
-class RepeatedIfExceptionsDisplayNameFormatter {
+public class RepeatedIfExceptionsDisplayNameFormatter {
 
     private final String pattern;
     private final String displayName;
 
-    RepeatedIfExceptionsDisplayNameFormatter(final String pattern, final String displayName) {
+    public RepeatedIfExceptionsDisplayNameFormatter(final String pattern, final String displayName) {
         this.pattern = pattern;
         this.displayName = displayName;
     }

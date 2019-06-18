@@ -1,4 +1,4 @@
-package io.github.artsok.params;
+package io.github.artsok.internal;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -11,12 +11,12 @@ import java.lang.reflect.Method;
 /**
  * @since 5.0 - FULL COPY PAST FROM ORIGINAL JUNIT 5
  */
-class ParameterizedTestParameterResolver implements ParameterResolver {
+public class ParameterizedTestParameterResolver implements ParameterResolver {
 
     private final ParameterizedRepeatedMethodContext methodContext;
     private final Object[] arguments;
 
-    ParameterizedTestParameterResolver(ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
+    public ParameterizedTestParameterResolver(ParameterizedRepeatedMethodContext methodContext, Object[] arguments) {
         this.methodContext = methodContext;
         this.arguments = arguments;
     }

@@ -18,6 +18,9 @@ package io.github.artsok.extension;
 
 
 import io.github.artsok.RepeatedIfExceptionsTest;
+import io.github.artsok.internal.RepeatedIfException;
+import io.github.artsok.internal.RepeatedIfExceptionsDisplayNameFormatter;
+import io.github.artsok.internal.RepeatedIfExceptionsInvocationContext;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.commons.util.StringUtils;
@@ -40,7 +43,7 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
  *
  * @author Artem Sokovets
  */
-public class RepeatIfExceptionsCondition implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback,
+public class RepeatIfExceptionsExtension implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback,
         AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
     private int repeats = 0;

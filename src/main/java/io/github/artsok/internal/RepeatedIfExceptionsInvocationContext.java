@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package io.github.artsok.extension;
+package io.github.artsok.internal;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
@@ -41,7 +41,7 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
     private final boolean repeatableExceptionAppeared;
     private final RepeatedIfExceptionsDisplayNameFormatter formatter;
 
-    RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, int successfulTestRepetitionsCount,
+    public RepeatedIfExceptionsInvocationContext(int currentRepetition, int totalRepetitions, int successfulTestRepetitionsCount,
                                           int minSuccess, boolean repeatableExceptionAppeared,
                                           RepeatedIfExceptionsDisplayNameFormatter formatter) {
         this.currentRepetition = currentRepetition;

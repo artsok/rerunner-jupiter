@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package io.github.artsok.extension;
+package io.github.artsok.internal;
 
 /**
  * Custom exception of rerunner-jupiter extension.

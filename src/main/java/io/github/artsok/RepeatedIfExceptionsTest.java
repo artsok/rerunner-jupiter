@@ -16,7 +16,7 @@
  */
 package io.github.artsok;
 
-import io.github.artsok.extension.RepeatIfExceptionsCondition;
+import io.github.artsok.extension.RepeatIfExceptionsExtension;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @TestTemplate
-@ExtendWith(RepeatIfExceptionsCondition.class)
+@ExtendWith(RepeatIfExceptionsExtension.class)
 public @interface RepeatedIfExceptionsTest {
 
     /**
