@@ -16,8 +16,7 @@
  */
 package io.github.artsok.internal;
 
-import org.junit.jupiter.api.extension.Extension;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junit.jupiter.api.extension.*;
 
 import java.util.List;
 
@@ -61,7 +60,6 @@ public class RepeatedIfExceptionsInvocationContext implements TestTemplateInvoca
     }
 }
 
-
 /**
  * Implements ExecutionCondition interface.
  * With one method in this interface, we can control of on/off executing test
@@ -91,7 +89,6 @@ class RepeatExecutionCondition implements ExecutionCondition {
         } else {
             return ConditionEvaluationResult.enabled("Repeat the tests");
         }
-
     }
 
     private boolean testUltimatelyFailed() {
@@ -110,3 +107,4 @@ class RepeatExecutionCondition implements ExecutionCondition {
         return successfulTestRepetitionsCount >= minSuccess;
     }
 }
+

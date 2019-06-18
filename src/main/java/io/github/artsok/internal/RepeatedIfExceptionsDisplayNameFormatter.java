@@ -35,10 +35,10 @@ public class RepeatedIfExceptionsDisplayNameFormatter {
 
     String format(final int currentRepetition, final int totalRepetitions) {
         if (currentRepetition > 1 && totalRepetitions > 0) {
-            final String p = pattern
+            final String result = pattern
                     .replace(RepeatedIfExceptionsTest.CURRENT_REPETITION_PLACEHOLDER, String.valueOf(currentRepetition - 1)) //Minus, because first run doesn't mean repetition
-                    .replace(RepeatedIfExceptionsTest.TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions));
-            return this.displayName.concat(p);
+                    .replace(RepeatedIfExceptionsTest.TOTAL_REPETITIONS_PLACEHOLDER, String.valueOf(totalRepetitions - 1));
+            return this.displayName.concat(" (").concat(result).concat(")");
         } else {
             return this.displayName;
         }

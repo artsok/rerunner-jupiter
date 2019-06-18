@@ -46,16 +46,16 @@ import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 public class RepeatIfExceptionsExtension implements TestTemplateInvocationContextProvider, BeforeTestExecutionCallback,
         AfterTestExecutionCallback, TestExecutionExceptionHandler {
 
+
     private int repeats = 0;
     private int minSuccess = 1;
-    private int allTestRuns = 0;
-    private static final int CURRENT_RUN = 1;
+    private int totalTestRuns = 0;
     private List<Class<? extends Throwable>> repeatableExceptions;
     private boolean repeatableExceptionAppeared = false;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
     private List<Boolean> historyExceptionAppear;
     private long suspend = 0L;
-    private static final int COUNT_OF_FIRST_TEST_RUN = 1;
+    private static final int CURRENT_RUN = 1;
 
 
     /**
@@ -91,7 +91,7 @@ public class RepeatIfExceptionsExtension implements TestTemplateInvocationContex
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
 
-        allTestRuns = totalRepeats + CURRENT_RUN;
+        totalTestRuns = totalRepeats + CURRENT_RUN;
         suspend = annotationParams.suspend();
         historyExceptionAppear = Collections.synchronizedList(new ArrayList<>());
 
@@ -156,7 +156,7 @@ public class RepeatIfExceptionsExtension implements TestTemplateInvocationContex
         repeatableExceptionAppeared = true;
 
         long currentSuccessCount = historyExceptionAppear.stream().filter(exceptionAppeared -> !exceptionAppeared).count();
-        if (currentSuccessCount  < minSuccess) {
+        if (currentSuccessCount < minSuccess) {
             if (isMinSuccessTargetStillReachable(minSuccess)) {
                 throw new TestAbortedException("Do not fail completely, but repeat the test", throwable);
             } else {
@@ -182,7 +182,7 @@ public class RepeatIfExceptionsExtension implements TestTemplateInvocationContex
      * @return true/false
      */
     private boolean isMinSuccessTargetStillReachable(final long minSuccessCount) {
-        return historyExceptionAppear.stream().filter(bool -> bool).count() < repeats + COUNT_OF_FIRST_TEST_RUN - minSuccessCount;
+        return historyExceptionAppear.stream().filter(bool -> bool).count() < totalTestRuns - minSuccessCount;
     }
 
     /**
@@ -196,7 +196,7 @@ public class RepeatIfExceptionsExtension implements TestTemplateInvocationContex
             if (currentIndex == 0) {
                 return true;
             }
-            return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < repeats + COUNT_OF_FIRST_TEST_RUN;
+            return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalTestRuns;
         }
 
         @Override
@@ -213,7 +213,7 @@ public class RepeatIfExceptionsExtension implements TestTemplateInvocationContex
             int successfulTestRepetitionsCount = toIntExact(historyExceptionAppear.stream().filter(b -> !b).count());
             if (hasNext()) {
                 currentIndex++;
-                return new RepeatedIfExceptionsInvocationContext(currentIndex, repeats,
+                return new RepeatedIfExceptionsInvocationContext(currentIndex, totalTestRuns,
                         successfulTestRepetitionsCount, minSuccess, repeatableExceptionAppeared, formatter);
             }
             throw new NoSuchElementException();
