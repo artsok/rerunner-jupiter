@@ -46,7 +46,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     private int repeats = 0;
     private int minSuccess = 1;
     private int allTestRuns = 0;
-    private final static int CURRENT_RUN = 1;
+    private static final int CURRENT_RUN = 1;
     private List<Class<? extends Throwable>> repeatableExceptions;
     private boolean repeatableExceptionAppeared = false;
     private RepeatedIfExceptionsDisplayNameFormatter formatter;
@@ -82,7 +82,8 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
                 .orElseThrow(() -> new RepeatedIfException("The extension should not be executed "
                         + "unless the test method is annotated with @RepeatedIfExceptionsTest."));
 
-        repeats = annotationParams.repeats();
+
+        int totalRepeats = annotationParams.repeats();
         minSuccess = annotationParams.minSuccess();
         Preconditions.condition(totalRepeats > 0, "Total repeats must be higher than 0");
         Preconditions.condition(minSuccess >= 1, "Total minimum success must be higher or equals than 1");
@@ -101,7 +102,7 @@ public class RepeatIfExceptionsCondition implements TestTemplateInvocationContex
     }
 
     @Override
-    public void beforeTestExecution(ExtensionContext context)  {
+    public void beforeTestExecution(ExtensionContext context) {
         repeatableExceptions = Stream.of(context.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
