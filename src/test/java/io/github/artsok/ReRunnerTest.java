@@ -64,7 +64,7 @@ public class ReRunnerTest {
 
     @Test
     void runReRunTest() throws Exception {
-        assertTestResults("reRunTest", false, 3, 2, 0);
+        assertTestResults("reRunTest", false, 4, 3, 0);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ReRunnerTest {
 
     @Test
     void runReRun2Test() throws Exception {
-        assertTestResults("reRunTest2", false, 2, 1, 0);
+        assertTestResults("reRunTest2", false, 3, 2, 0);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ReRunnerTest {
 
     @Test
     void runReRun3Test() throws Exception {
-        assertTestResults("reRunTest3", false, 10, 9, 0);
+        assertTestResults("reRunTest3", false, 11, 10, 0);
     }
 
     @DisplayName("Name for our test")
@@ -132,7 +132,7 @@ public class ReRunnerTest {
 
     @Test
     void runReRunTest6() throws Exception {
-        assertTestResults("reRunTest6", false, 2, 1, 0);
+        assertTestResults("reRunTest6", false, 3, 2, 0);
     }
 
     @ProgrammaticTest
@@ -144,7 +144,7 @@ public class ReRunnerTest {
 
     @Test
     void runReRunTest7() throws Exception {
-        assertTestResults("reRunTest7", false, 7, 6, 3);
+        assertTestResults("reRunTest7", false, 8, 7, 3);
     }
 
     @ProgrammaticTest
