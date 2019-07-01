@@ -20,7 +20,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  *
  * @author Artem Sokovets
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @TestTemplate
 @ExtendWith(ParameterizedRepeatedExtension.class)
