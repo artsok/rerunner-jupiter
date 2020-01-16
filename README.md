@@ -5,7 +5,7 @@
 [![License badge](https://img.shields.io/badge/license-Apache2-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 *rerunner-jupiter* is a extension for Junit 5. 
-Re-run failed JUnit-Jupiter tests immediately. Very useful when you UI/API tests don't stable. 
+Re-run failed JUnit-Jupiter tests immediately. Very useful when your UI/API tests don't stable. 
 This library is open source, released under the terms of [Apache 2.0 License].
 
 ## How To Use
