@@ -1,6 +1,6 @@
 # rerunner-jupiter
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.artsok/rerunner-jupiter)
-[![Build Status](https://travis-ci.org/artsok/rerunner-jupiter.svg?branch=2.0.1)](https://travis-ci.org/artsok/rerunner-jupiter)
+[![Build Status](https://travis-ci.org/artsok/rerunner-jupiter.svg?branch=master)](https://travis-ci.org/artsok/rerunner-jupiter)
 ![badge-jdk-8](https://img.shields.io/badge/jdk-8-yellow.svg "JDK-8")
 [![License badge](https://img.shields.io/badge/license-Apache2-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -16,7 +16,7 @@ In order to include *rerunner-jupiter* in a Maven project, first add the followi
 <dependency>
     <groupId>io.github.artsok</groupId>
     <artifactId>rerunner-jupiter</artifactId>
-    <version>2.1.3</version>
+    <version>2.1.5</version>
     <scope>test</scope>
 </dependency>
 ```
