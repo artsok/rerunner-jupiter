@@ -13,7 +13,7 @@ cache:
   - '$HOME/.m2/repository'
 
 jdk:
-- oraclejdk11
+- oraclejdk12
 
 script:
     - mvn test sonar:sonar
