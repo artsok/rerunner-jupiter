@@ -133,7 +133,7 @@ public class ParameterizedRepeatedExtension implements TestTemplateInvocationCon
             throw throwable;
         }
         repeatableExceptionAppeared = true;
-        throw throwable;
+        throw new TestAbortedException("Do not fail completely, but repeat the test", throwable);
     }
 
     private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
