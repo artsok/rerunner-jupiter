@@ -86,8 +86,8 @@ public class ParameterizedRepeatedMethodContext {
     }
 
     /**
-     * Get the number of parameters of the {@link Method} represented by this
-     * context.
+     * Get the number of parameters of the {@link Method} represented by this context.
+     * @return - number of parameters
      */
     public int getParameterCount() {
         return resolvers.length;
@@ -188,7 +188,7 @@ public class ParameterizedRepeatedMethodContext {
 
     static class Converter implements ParameterizedRepeatedMethodContext.Resolver {
 
-        private static final ParameterizedRepeatedMethodContext.Converter DEFAULT = new  ParameterizedRepeatedMethodContext.Converter(DefaultArgumentConverter.INSTANCE);
+        private static final ParameterizedRepeatedMethodContext.Converter DEFAULT = new ParameterizedRepeatedMethodContext.Converter(DefaultArgumentConverter.INSTANCE);
 
         private final ArgumentConverter argumentConverter;
 
@@ -201,8 +201,7 @@ public class ParameterizedRepeatedMethodContext {
             Object argument = arguments[parameterContext.getIndex()];
             try {
                 return this.argumentConverter.convert(argument, parameterContext);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw parameterResolutionException("Error converting parameter", ex, parameterContext);
             }
         }
@@ -224,8 +223,7 @@ public class ParameterizedRepeatedMethodContext {
             ArgumentsAccessor accessor = new DefaultArgumentsAccessor(arguments);
             try {
                 return this.argumentsAggregator.aggregateArguments(accessor, parameterContext);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw parameterResolutionException("Error aggregating arguments for parameter", ex, parameterContext);
             }
         }
