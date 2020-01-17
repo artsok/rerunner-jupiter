@@ -227,8 +227,10 @@ public class ParameterizedRepeatedExtension implements TestTemplateInvocationCon
 
         @Override
         public boolean hasNext() {
-            if (historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats) {
-                return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
+            if (!historyExceptionAppear.isEmpty()
+                    && historyExceptionAppear.get(historyExceptionAppear.size() - 1)
+                    && currentIndex < totalRepeats) {
+                return true;
             }
             return invocationCount.get() >= paramsCount.get();
         }
