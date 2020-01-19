@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -287,26 +288,80 @@ public class ReRunnerTest {
         );
     }
 
+    @ProgrammaticTest
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 2)
+    @ValueSource(ints = {1})
+    public void reRunTestParameterized1(int number) {
+        assertThat(number, equalTo(5));
+    }
+
+    @Test
+    void runReRunParameterized1Test() throws Exception {
+        assertTestResults("reRunTestParameterized1", 0, 1, 3, 2, 0, int.class);
+    }
+
+    @ProgrammaticTest
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 2)
+    @ValueSource(ints = {1, 3, 2})
+    public void reRunTestParameterized2(int number) {
+        assertThat(number, equalTo(3));
+    }
+
+    @Test
+    void runReRunParameterized2Test() throws Exception {
+        assertTestResults("reRunTestParameterized2", 1, 2, 7, 4, 0, int.class);
+    }
+
+    @ProgrammaticTest
+    @ParameterizedRepeatedIfExceptionsTest(repeats = 30)
+    @ValueSource(ints = {1, 3, 2})
+    public void reRunTestParameterized3(int number) {
+        assertThat(number, equalTo(new Random().nextInt(500) % 3));
+    }
+
+    @Test
+    void runReRunParameterized3Test() throws NoSuchMethodException {
+        SummaryGeneratingListener testListener = runTest("reRunTestParameterized3", int.class);
+
+        assertEquals(2, testListener.getSummary().getTestsSucceededCount(), "successful test runs");
+        assertEquals(1, testListener.getSummary().getTestsFailedCount(), "failed test runs");
+        assertGreaterThan(31, testListener.getSummary().getTestsStartedCount(), "started test runs");
+        assertGreaterThan(29, testListener.getSummary().getTestsAbortedCount(), "aborted test runs");
+        assertEquals(0, testListener.getSummary().getTestsSkippedCount(), "skipped test runs");
+    }
+
+    private void assertGreaterThan(int expected, long actual, String message) {
+        assertTrue(expected < actual, String.format("expected %s to be greater than %s,%nbut was %s", message, expected, actual));
+    }
+
     private void assertTestResults(String methodName, boolean successfulTestRun, int startedTests, int abortedTests,
                                    int skippedTests) throws Exception {
+        assertTestResults(methodName,
+                successfulTestRun ? 1 : 0,
+                !successfulTestRun ? 1 : 0,
+                startedTests, abortedTests, skippedTests);
+    }
+
+    private void assertTestResults(String methodName, int successfulTestRuns, int failedTestRuns, int startedTests, int abortedTests,
+                                   int skippedTests, Class<?>... parameterTypes) throws Exception {
+        SummaryGeneratingListener listener = runTest(methodName, parameterTypes);
+
+        assertEquals(successfulTestRuns, listener.getSummary().getTestsSucceededCount(), "successful test runs");
+        assertEquals(failedTestRuns, listener.getSummary().getTestsFailedCount(), "failed test runs");
+        assertEquals(startedTests, listener.getSummary().getTestsStartedCount(), "started test runs");
+        assertEquals(abortedTests, listener.getSummary().getTestsAbortedCount(), "aborted test runs");
+        assertEquals(skippedTests, listener.getSummary().getTestsSkippedCount(), "skipped test runs");
+    }
+
+    private SummaryGeneratingListener runTest(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selectMethod(getClass(), getClass().getMethod(methodName)))
+                .selectors(selectMethod(getClass(), getClass().getMethod(methodName, parameterTypes)))
                 .build();
         Launcher launcher = LauncherFactory.create();
         launcher.registerTestExecutionListeners(listener);
         launcher.execute(request);
-
-        if (successfulTestRun) {
-            assertEquals(1, listener.getSummary().getTestsSucceededCount(), "successful test runs");
-            assertEquals(0, listener.getSummary().getTestsFailedCount(), "failed test runs");
-        } else {
-            assertEquals(0, listener.getSummary().getTestsSucceededCount(), "successful test runs");
-            assertEquals(1, listener.getSummary().getTestsFailedCount(), "failed test runs");
-        }
-        assertEquals(startedTests, listener.getSummary().getTestsStartedCount(), "started test runs");
-        assertEquals(abortedTests, listener.getSummary().getTestsAbortedCount(), "aborted test runs");
-        assertEquals(skippedTests, listener.getSummary().getTestsSkippedCount(), "skipped test runs");
+        return listener;
     }
 
     @Tag("programmatic-tests")

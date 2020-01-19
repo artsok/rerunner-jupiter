@@ -133,7 +133,25 @@ public class ParameterizedRepeatedExtension implements TestTemplateInvocationCon
             throw throwable;
         }
         repeatableExceptionAppeared = true;
-        throw new TestAbortedException("Do not fail completely, but repeat the test", throwable);
+
+        long currentSuccessCount = historyExceptionAppear.stream().filter(exceptionAppeared -> !exceptionAppeared).count();
+        if (currentSuccessCount < minSuccess) {
+            if (isMinSuccessTargetStillReachable(minSuccess)) {
+                throw new TestAbortedException("Do not fail completely, but repeat the test", throwable);
+            } else {
+                throw throwable;
+            }
+        }
+    }
+
+    /**
+     * If cannot reach a minimum success target, will return true
+     *
+     * @param minSuccessCount - minimum success count
+     * @return true/false
+     */
+    private boolean isMinSuccessTargetStillReachable(final long minSuccessCount) {
+        return historyExceptionAppear.stream().filter(bool -> bool).count() <= totalRepeats - minSuccessCount;
     }
 
     private boolean appearedExceptionDoesNotAllowRepetitions(Throwable appearedException) {
@@ -209,8 +227,10 @@ public class ParameterizedRepeatedExtension implements TestTemplateInvocationCon
 
         @Override
         public boolean hasNext() {
-            if (historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats) {
-                return historyExceptionAppear.stream().anyMatch(ex -> ex) && currentIndex < totalRepeats;
+            if (!historyExceptionAppear.isEmpty()
+                    && historyExceptionAppear.get(historyExceptionAppear.size() - 1)
+                    && currentIndex < totalRepeats) {
+                return true;
             }
             return invocationCount.get() >= paramsCount.get();
         }
