@@ -106,6 +106,25 @@ public class RepeatIfExceptionsExtension implements TestTemplateInvocationContex
 
     @Override
     public void beforeTestExecution(ExtensionContext context) {
+            
+        //get TotalTestRuns and minSuccess from system properties
+        String strTotalRepeats = System.getProperty("totalRepeats");
+        if(strTotalRepeats != null) {
+            try {
+                totalTestRuns = Integer.parseInt(strTotalRepeats);
+            }catch(Exception e){
+            }
+        }
+
+        
+        String strMinSuccess = System.getProperty("minSuccess");
+        if(strMinSuccess != null) {
+            try {
+            	minSuccess = Integer.parseInt(strMinSuccess);
+            }catch(Exception e){
+            }
+        }
+            
         repeatableExceptions = Stream.of(context.getTestMethod()
                 .flatMap(testMethods -> findAnnotation(testMethods, RepeatedIfExceptionsTest.class))
                 .orElseThrow(() -> new IllegalStateException("The extension should not be executed "))
